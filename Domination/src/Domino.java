@@ -1,0 +1,53 @@
+
+public class Domino implements Comparable<Domino> {
+
+	@Override
+	public int compareTo(Domino arg0) {
+		return this.index - arg0.index;
+	}
+	
+	//////////////////////////////////////////////////////////////
+	// 						VARIABLES							//
+	//////////////////////////////////////////////////////////////
+
+	private int index;
+	private Cell[] cells = new Cell[2];
+
+	
+
+	//////////////////////////////////////////////////////////////
+	// 						 METHODS							//
+	//////////////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////////////
+	// 						CONSTRUCTOR							//
+	//////////////////////////////////////////////////////////////
+	public Domino(int index)
+	{
+		this.index = index;
+	}
+	
+	public Domino(int index, Cell cell1, Cell cell2)
+	{
+		this.index = index;
+		this.cells[0] = cell1;
+		this.cells[1] = cell2;
+	}
+	//////////////////////////////////////////////////////////////
+	// 						ACCESSOR							//
+	//////////////////////////////////////////////////////////////
+	public int getIndex()
+	{
+		return this.index;
+	}
+	public Cell[] getCells()
+	{
+		return this.cells;
+	}
+	
+	public void setCells(Cell cell1, Cell cell2) {
+		this.cells[0] = cell1;
+		this.cells[1] = cell2;
+	}
+	
+}
