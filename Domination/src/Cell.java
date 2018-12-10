@@ -16,12 +16,20 @@ public class Cell {
 	//////////////////////////////////////////////////////////////
 	// 						CONSTRUCTOR							//
 	//////////////////////////////////////////////////////////////
-	
-	public Cell(int crownNb, String terrainType, boolean isVisited)
+	/**
+	 * Custom constructor. Instanciate a cell using its crown number and its
+	 * type.
+	 * <p>
+	 * @param crownNb		Number of crowns on the cell.
+	 * @param terrainType	Cell type.
+	 * @author 				Tchong-Kite HUAM
+	 * @date 				last updated on 10.12.2018
+	 */
+	public Cell(int crownNb, String terrainType)
 	{
 		this.crownNb = crownNb;
 		this.terrainType = terrainType;
-		this.isVisited = isVisited;
+		this.isVisited = false;
 	}
 	
 	//////////////////////////////////////////////////////////////

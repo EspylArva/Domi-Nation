@@ -1,3 +1,7 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,6 +22,14 @@ public class Game
 	//////////////////////////////////////////////////////////////
 	// 						 METHODS							//
 	//////////////////////////////////////////////////////////////
+	/**
+	 * Allows the game to define a precise number of players. Defining a player
+	 * is possible through defining its name.
+	 * <p>
+	 * @param numberOfPlayers		Precise number of players to instanciate.
+	 * @author 						Tchong-Kite HUAM
+	 * @date						Last updated on 10.12.2018
+	 */
 	private void addPlayer(int numberOfPlayers) {			// Ajoute des joueurs en leur demandant un nom
 		Scanner scan = new Scanner(System.in);
 		for(int i=0 ; i<numberOfPlayers ; i++)
@@ -30,6 +42,14 @@ public class Game
 		}
 	}
 
+	/**
+	 * Adds a precise number of dominos to the library. The number of dominos
+	 * to add to the library depends on the number of players.
+	 * <p>
+	 * @param numberOfDominos		A library containing a set number of dominos.
+	 * @author 						Tchong-Kite HUAM
+	 * @date						Last updated on 07.12.2018
+	 */
 	private void generateDominos(int numberOfDominos)		// Génère X dominos
 	{														// A modifier : génération aléatoire ? Préconçue selon un XML ?
 		for(int i=1 ; i<=numberOfDominos ; i++)
@@ -38,6 +58,17 @@ public class Game
 		}
 	}
 
+	/**
+	 * Method to draw a set number a set number of dominos.
+	 * <p>
+	 * According to the number of players, draws a certain amount of dominos
+	 * depending from the number of players from the library and adds them to 
+	 * the drawing pile.
+	 * <p>
+	 * @return			Drawing pile containing a certain amount of dominos.
+	 * @author 			Tchong-Kite HUAM
+	 * @date			Last updated on 10.12.2018
+	 */
 	public ArrayList<Domino> popDomino()		// pops X dominos (selon le nombre de rois : (4 - 3 - 4) rois pour (2 - 3 - 4) joueurs
 	{
 		ArrayList<Domino> pop = new ArrayList<Domino>();
@@ -49,7 +80,14 @@ public class Game
 		}
 		return pop;
 	}
-
+	
+	/**
+	 * Randomize the order of players for the very first turn.
+	 * <p>
+	 * @return		Randomized array of players for the first turn.
+	 * @author 		Tchong-Kite HUAM
+	 * @date		Last updated on 10.12.2018
+	 */
 	public ArrayList<Player> randomizeKings()							// Renvoie l'ordre du 1er tour (aléatoire)
 	{
 		ArrayList<Player> randomKingArray = new ArrayList<Player>();
@@ -72,6 +110,16 @@ public class Game
 		return randomKingArray;
 	}
 	
+	/**
+	 * Update the drawing pile by checking the library content.
+	 * <p>
+	 * Calls the drawing method if the library still has enough dominos;
+	 * otherwise, returns an error message.
+	 * <p>
+	 * @return			New drawing pile if existant; message error otherwise.
+	 * @author 			Tchong-Kite HUAM
+	 * @date			Last updated on 10.12.2018
+	 */
 	public ArrayList<Domino> distribDominos()
 	{
 	    if(!availableDominos.isEmpty())            // Tant qu'il reste des dominos dans la pile, il faut les distribuer
@@ -85,10 +133,22 @@ public class Game
 	        return null;
 	    }
 	}
+	
+	/**
+	 * Returns the order of the players accordingly to last turn domino picks.
+	 * <p>
+	 * According to the rules, the lower index domino holder will play first
+	 * next turn. This function returns the order for the upcoming turn by
+	 * observing last turn domino picks.
+	 * <p>
+	 * @return			Order of the players for the upcoming turn.
+	 * @author 			Tchong-Kite HUAM
+	 * @date			Last updated on 10.12.2018
+	 */
 	public ArrayList<Player> getTurnOrder()
 	{
 	    ArrayList<Domino> temp = new ArrayList<Domino>();
-	    for(int i=1 ; i<5 ; i++)
+	    for(int i=1 ; i<numKing+1 ; i++)
 	    {
 	    	temp.add(oldChoice.get(oldChoice.size()-i));
 	    }
@@ -120,10 +180,62 @@ public class Game
 		return turnOrder;
 	}
 	
-	
+	/* Bien mettre le fichier csv dans le projet (src)
+	 * Renvoit Domnino contenant : index cell1 cell2
+	 */
+	public Domino dominoParser(int index){
+		//Domino contenant index, cell1, cell2
+		index++; //Le fichier csv contient une ligne useless
+		String file = "src/dominos.csv"; //Chemin fichier csv
+        String splitLine = "";			 //Character spliting line
+        String splitValue = ",";		 //Character split values
+        int compteur = 0;   //Principe a optimiser
+        int crownNb1 = 0; int crownNb2 = 0;
+        String terrainType1 = "void"; String terrainType2 = "void";
+        Cell cell1 = new Cell(crownNb1, terrainType1); //Par defaut
+        Cell cell2 = new Cell(crownNb2, terrainType2); //Par defaut
+        Domino dominoParse = new Domino(index, cell1, cell2); //Par defaut
+        
+        try (BufferedReader bufferReader = new BufferedReader(new FileReader(file))) {
+        	
+            while ((splitLine = bufferReader.readLine()) != null) {
+            	compteur ++;
+                // Separateur value
+            	if (compteur == index) {
+            		String[] domino = splitLine.split(splitValue);
+
+                    //créer domino
+                    crownNb1 = Integer.parseInt(domino[0]);
+                    crownNb2 = Integer.parseInt(domino[2]);
+                    terrainType1 = domino[1];
+                    terrainType2 = domino[3];
+                    cell1 = new Cell(crownNb1, terrainType1);
+                    cell2 = new Cell(crownNb2, terrainType2);
+                    dominoParse = new Domino(index, cell1, cell2);
+                    
+                    System.out.println("Domino n"+(index-1)+" : "
+                    		+ "Crown Nb1 : "+crownNb1+ " | Type terrain1 : "+terrainType1 
+                    		+ " | Crown Nb2 : "+crownNb2+ " | Type terrain2 : "+terrainType2 );
+                    return dominoParse;
+            	}
+            	if (compteur > 49) {System.out.println("404not found");return dominoParse;}
+
+            } 
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+		System.out.println("404 Not found");
+		return dominoParse;	
+	}
 	//////////////////////////////////////////////////////////////
 	// 						CONSTRUCTOR							//
 	//////////////////////////////////////////////////////////////
+	/**
+	 * Custom constructor for a Game instance.
+	 * <p>
+	 * @param numberOfPlayers		Number of players for a game instance.
+	 */
 	public Game(int numberOfPlayers) {		// TODO : mods (bonus) : default = no mode
 		//TODO
 		switch (numberOfPlayers)
@@ -155,6 +267,9 @@ public class Game
 
 		}//*/
 	}
+	
+
+	
 	//////////////////////////////////////////////////////////////
 	// 						ACCESSOR							//
 	//////////////////////////////////////////////////////////////

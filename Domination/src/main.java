@@ -9,32 +9,44 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.border.TitledBorder;
 
-import org.mapeditor.core.Map;
-import org.mapeditor.io.TMXMapReader;
-import org.mapeditor.io.TMXMapWriter;
-
 public class main {
 	
 	public static void main(String[] args)
 	{
 		boolean zoneTest = true;
 		if(zoneTest){
-
+			
 			Player player = new Player("François");
-			Domino domino = new Domino(24, new Cell(3, "mountain", false), new Cell(0, "sea", false));
+			Domino domino = new Domino(24, new Cell(3, "Forêt"), new Cell(0, "Mer"));
 			player.addToHand(domino);
 			KingdomMap map = new KingdomMap(9);
 			
 			System.out.println(domino.getCells()[0].getTerrainType());
 			System.out.println(domino.getCells()[1].getTerrainType());
 			
-			map.swapCell(2, 3, new Cell(0,"plains"	, false));
-			map.swapCell(2, 4, new Cell(0,"plains"	, false));
-			map.swapCell(3, 2, new Cell(0,"plains"	, false));
-			map.swapCell(3, 4, new Cell(0,"mountain", false));
-			map.swapCell(4, 2, new Cell(0,"sea"		, false));
-			map.swapCell(4, 3, new Cell(0,"mountain", false));
-			map.swapCell(5, 2, new Cell(0,"mountain", false));
+			/* TYPES : Pairie, Forêt, Champs, Mines, Mer, Montagne*/
+			
+			map.swapCell(1, 3, new Cell(1,"Prairie"));
+
+			map.swapCell(2, 3, new Cell(0,"Prairie"));
+			map.swapCell(2, 4, new Cell(0,"Mer"));
+			
+			map.swapCell(3, 4, new Cell(2,"Mer"));
+			map.swapCell(3, 5, new Cell(0,"Forêt"));
+			
+			map.swapCell(4, 2, new Cell(0,"Mer"));
+			map.swapCell(4, 5, new Cell(1,"Forêt"));
+			map.swapCell(4, 6, new Cell(2,"Forêt"));
+
+			map.swapCell(5, 2, new Cell(0,"Mer"));
+			map.swapCell(5, 3, new Cell(3,"Mer"));
+			map.swapCell(5, 4, new Cell(0,"Mer"));
+			map.swapCell(5, 5, new Cell(0,"Forêt"));
+			
+//			map.swapCell(6, 4, new Cell(0,"Mer"));
+//			map.swapCell(7, 4, new Cell(0,"Mer"));
+
+
 			
 			player.setKingdomMap(map);
 			
@@ -64,58 +76,47 @@ public class main {
 				System.out.println("Cell1 : " + move.getPos1()[0] + ";" + move.getPos1()[1] + " | Cell2 : " + + move.getPos2()[0] + ";" + move.getPos2()[1]);
 			}
 
-			System.out.println(map.roughSize()[0] + "x" + map.roughSize()[1]);
+			System.out.println(map.getRoughSize()[0] + "x" + map.getRoughSize()[1]);
 			
-			System.out.println(moves.get(3).getDomino().getCells()[0].getTerrainType());
 			
-			int x1 = moves.get(3).getPos1()[0];
-			int y1 = moves.get(3).getPos1()[1];
-			int x2 = moves.get(3).getPos2()[0];
-			int y2 = moves.get(3).getPos2()[1];
-			
-			System.out.println(x1 + " " + y1 + " | " + x2 + " " + y2);
-
 			for(ArrayList<Cell> row : map.getTerrain())
 			{
 				for(Cell column : row)
 				{
-					System.out.print(column.getTerrainType() + " ");
+					System.out.print(column.getTerrainType().substring(0, 1) + " ");
 				}
 				System.out.println();
 			}//*/
 
-			
-			KingdomMap newmap = player.returnFutureMap(moves.get(3));
+			System.out.println("**********************");
+/*			KingdomMap newmap = player.returnFutureMap(moves.get(3));
 			
 			
 			for(ArrayList<Cell> row : newmap.getTerrain())
 			{
 				for(Cell column : row)
 				{
-					System.out.print(column.getTerrainType() + " ");
+					System.out.print(column.getTerrainType().substring(0, 1) + " ");
 				}
 				System.out.println();
-			}//*/
+			}//
+			
+			System.out.println(newmap.getRoughSize()[0] + "x" + newmap.getRoughSize()[1]);
+			*/
+			System.out.println(map.returnScore());
 			
 			System.out.println("End");
 			
 			
+			Domino x = new Domino(13);
+			Domino y = new Domino(7);
+//			System.out.println(x.compareTo(y));
 			
-			
-			
-			
-			
-			
-			
-			
-			
+		
 		}else {
-		
-		
-		
-		
+
 		//*/
-		Game game = new Game(3);								// Jeu sur deux joueurs, créé : 
+		Game game = new Game(2);								// Jeu sur deux joueurs, créé : 
 																//								1 deck de X * 12 dominos (ici 2*12 = 24)
 																//								2 joueurs et leur distribue un domino, en l'enlevant du deck
 																//								X rois (ici 4, car 2*2 ; on aurait pu avoir 3 ou 4)
@@ -251,10 +252,11 @@ public class main {
 	    {
 	    	System.out.println("           " + i.getName() + " : " + i.showHand());
 	    }
-	    System.out.print("PIOCHE : ");
+	    System.out.print("PIOCHE : \n");
 	    for(Domino i : game.getChoice())
 	    {
 	    	System.out.print(i.getIndex() + " ");
+	    	game.dominoParser(i.getIndex());
 	    }
 	    System.out.println();
 	    System.out.print("ANCIENNE PIOCHE : ");

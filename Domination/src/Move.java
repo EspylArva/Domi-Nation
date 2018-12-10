@@ -10,7 +10,6 @@ public class Move {
 	private int[] pos1;
 	private int[] pos2;
 	private KingdomMap map;
-	private boolean isPossible;
 	
 	//////////////////////////////////////////////////////////////
 	// 						 METHODS							//
@@ -20,6 +19,13 @@ public class Move {
 	// 						CONSTRUCTOR							//
 	//////////////////////////////////////////////////////////////
 
+	/**
+	 * Custom constructor for a move.
+	 * <p>
+	 * @param dominal	Domino taken into account in the move.
+	 * @param pos1		XY positions for the first cell of the domino.
+	 * @param pos2		XY positions for the second cell of the domino.
+	 */
 	public Move(Domino dominal, int[] pos1, int[] pos2)
 	{
 		this.domino = dominal;
@@ -27,17 +33,6 @@ public class Move {
 		this.pos2 = pos2;
 	}
 
-	public boolean isPossible() {
-		boolean res = false;
-		// parcourir chaque cell. Verifier si les voisins sont legit.
-			//SI oui : res = true;
-			//SI non : res = false;
-		
-		//SI oui : 
-		
-		
-		return false;
-	}
 	
 	//////////////////////////////////////////////////////////////
 	// 						ACCESSOR							//
@@ -72,10 +67,6 @@ public class Move {
 
 	public void setMap(KingdomMap map) {
 		this.map = map;
-	}
-
-	public void setPossible(boolean isPossible) {
-		this.isPossible = isPossible;
 	}
 
 }

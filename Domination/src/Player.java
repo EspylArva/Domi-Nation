@@ -15,7 +15,6 @@ public class Player {
 	private Domino lastDomino;			// Utile ?
 	private int points;
 	
-	//TODO
 	private KingdomMap map;
 	
 	
@@ -23,6 +22,15 @@ public class Player {
 	//////////////////////////////////////////////////////////////
 	// 						 METHODS							//
 	//////////////////////////////////////////////////////////////
+	/**
+	 * Allows the player to select a domino from the list of dominos in the
+	 * drawing pile and add it to his hand.
+	 * <p>
+	 * @param availableDominos		ArrayList of dominos in the drawing pile.
+	 * @return						Selected domino.
+	 * @author 						Tchong-Kite HUAM
+	 * @date						Last updated on 10.12.2018
+	 */
 	public Domino selectDomino(ArrayList<Domino> availableDominos)		// Demande un input d'index (int) et vérifie que cet input existe dans la liste availableDominos (paramètre)
 	{																	// TODO ? Ajout à lastDomino
 		Scanner scan = new Scanner(System.in);
@@ -59,7 +67,14 @@ public class Player {
 	}
 
 	
-
+	/**
+	 * Returns indexes of all dominos in the player's hand, for debugging
+	 * purposes.
+	 * <p>
+	 * @return		String containing all dominos in hand.
+	 * @author 		Tchong-Kite HUAM
+	 * @date		Last updated on 10.12.2018
+	 */
 	public String showHand() {			// Montre l'index de tous les dominos en main
 		String hand = "";
 		for(Domino i : getDominoInHands())
@@ -68,28 +83,26 @@ public class Player {
 		}
 		return hand;
 	}
-	/*
-	public ArrayList<Move> getListValidMove(Domino domino, Map map)
-	{
-		ArrayList<Move> possibleMoves = new ArrayList<Move>();
-		for (Cell cell : domino.getCells())
-		{
-			
-		}
-		
-		for(Move move : possibleMoves)
-		{
-			if(!move.isPossible())
-			{
-				possibleMoves.remove(move);
-			}
-		}
-		return possibleMoves;
-	}
-	//*/
-	
+
+	/**
+	 * Returns an array of possible moves for a selected domino.
+ 	 * The domino entered in parameter should be selected from the player's
+	 * hand, drawing pile, or library. This method should be appliable to one's
+	 * hand, but also another player in order to maximize/minimize one's loss.
+	 * <p>
+	 * A move is composed of a domino and
+	 * its potential positions.
+	 * <p>
+	 * @param domino		Selected domino.
+ 	 * @param map			Selected map.
+	 * @return				ArrayList of possible moves for a selected domino
+	 * and map.
+	 * @author 				Tchong-Kite HUAM
+	 * @date				Last updated on 10.12.2018
+	 */
 	public ArrayList<Move> getPossibleMove(Domino domino, KingdomMap map)
 	{
+
 		int x; int y;
 		ArrayList<Move> moves = new ArrayList<Move>();
 		Cell currentCell;
@@ -107,9 +120,60 @@ public class Player {
 				}
 			}
 		}
+		try {
+			for(Move move : moves)
+			{
+				if(!testNewSize(move))
+				{
+					moves.remove(move);
+				}
+			}		
+		}
+		catch(Exception e)
+		{
+			
+		}
 		return moves;
 	}
 	
+	/**
+	 * Tests if a move will imply an oversized map.
+	 * <p>
+	 * Map maximum size is defined in utils class and should be defined once
+	 * for all in the game initialization.
+	 * <p>
+	 * @param move			Input move.
+	 * @return				Explicit answer to whether the move is legitimate
+	 * or not.
+	 * @author 				Tchong-Kite HUAM
+	 * @date				Last updated on 10.12.2018
+	 */
+	private boolean testNewSize(Move move) {
+		KingdomMap potentialMap = (KingdomMap) this.map.clone();
+		Domino inputDomino = move.getDomino();
+		int[] cell1position = move.getPos1();
+		int[] cell2position = move.getPos2();
+		
+		potentialMap.swapCell(cell1position[0], cell1position[1], inputDomino.getCells()[0]);
+		potentialMap.swapCell(cell2position[0], cell2position[1], inputDomino.getCells()[1]);
+		
+		if(potentialMap.getRoughSize()[0] > utils.mapSize || potentialMap.getRoughSize()[1] > utils.mapSize)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+
+	/**
+	 * 
+	 * @param move
+	 * @return
+	 * @author 						Tchong-Kite HUAM
+	 * @date						Last updated on 10.12.2018
+	 */
 	public KingdomMap returnFutureMap(Move move)
 	{
 		int x1 = move.getPos1()[0];
@@ -120,46 +184,32 @@ public class Player {
 		Cell cell1 = move.getDomino().getCells()[0];
 		Cell cell2 = move.getDomino().getCells()[1];
 		
-		System.out.println(cell1.getCrownNb() + " " + cell1.getTerrainType());
-		
-		System.out.println(String.valueOf(x1)+ String.valueOf(y1) + " " + String.valueOf(x2)+ String.valueOf(y2));
-		
 		this.map = this.map.swapCell(x1, y1, cell1);
 		this.map = this.map.swapCell(x2, y2, cell2);
 		
 		return this.map;
 	}
 	
+	/**
+	 * Returns a list of possible moves for a set domino, for a set map and at
+	 * a precise position.
+	 * <p>
+	 * The method should be appliable to any map from any player, for any
+	 * domino, in order to allow further decisions for the players.
+	 * <p>
+	 * @param x			X precise position. Absciss.
+	 * @param y			Y precise position. Ordonate.
+	 * @param domino	Input domino.
+	 * @param map		Input map.
+	 * @return			ArrayList of moves possible at set position for input
+	 * map and domino.
+	 * @author 						Tchong-Kite HUAM
+	 * @date						Last updated on 10.12.2018
+	 */
 	private ArrayList<Move> testNeighbours(int x, int y, Domino domino, KingdomMap map) {
-		HashMap<int[], String> listOfNeighboursTypes = new HashMap<int[], String>();
-		ArrayList<ArrayList<Cell>> mapCell = map.getTerrain();
+		HashMap<int[], String> listOfNeighboursTypes = map.getNeighbours(x, y);
 		ArrayList<Move> listOfMoves = new ArrayList<Move>();
 		
-		
-		// Adding <"Top" , type> ; <"Bottom" , type> if possible
-		if(x > 0)						//  anything but first row (top = possible)
-		{
-			listOfNeighboursTypes.put(new int[] {x-1, y} ,
-					mapCell.get(x-1).get(y).getTerrainType());
-		}
-		if( x < map.getSize()-1 )			// anything but last row (bottom = possible)
-		{
-			listOfNeighboursTypes.put(new int[] {x+1, y} ,
-					mapCell.get(x+1).get(y).getTerrainType());
-		}
-		
-			// Adding <"Left" , type> ; <"Right" , type> if possible
-		if(y > 0)						// anything but first column (left = possible)
-		{
-			listOfNeighboursTypes.put(new int[] {x, y-1} ,
-					mapCell.get(x).get(y-1).getTerrainType());
-		}
-		if( y < map.getSize()-1 )			// anything but last column (right = possible)
-		{
-			listOfNeighboursTypes.put(new int[] {x, y+1} ,
-					mapCell.get(x).get(y+1).getTerrainType());
-		}
-
 		// At this point, listOfNeighboursType contains entries such as :
 		/*
 		 "top" 		; "mountains"
@@ -206,10 +256,29 @@ public class Player {
 		}
 		return listOfMoves;
 	}
+	
+	/**
+	 * Updates player's score according to his current map.
+	 * <p>
+	 * @author 						Tchong-Kite HUAM
+	 * @date						Last updated on 10.12.2018
+	 */
+	private void updateScore()
+	{
+		this.points = this.map.returnScore();
+	}
 
 	//////////////////////////////////////////////////////////////
 	// 						CONSTRUCTOR							//
 	//////////////////////////////////////////////////////////////
+	/**
+	 * Default constructor for a player. Asks for a name input and sets the
+	 * score to 0.
+	 * <p>
+	 * @param name		Player name input.
+	 * @author 			Tchong-Kite HUAM
+	 * @date			Last updated on 10.12.2018
+	 */
 	public Player(String name)
 	{
 		this.setName(name);
