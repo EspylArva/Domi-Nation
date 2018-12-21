@@ -42,24 +42,35 @@ public class Game
 		}
 	}
 
-	/**
+	/** !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	 * Adds a precise number of dominos to the library. The number of dominos
 	 * to add to the library depends on the number of players.
 	 * <p>
 	 * @param numberOfDominos		A library containing a set number of dominos.
-	 * @author 						Tchong-Kite HUAM
+	 * @author 						Tchong-Kite HUAM  Batelier
 	 * @date						Last updated on 07.12.2018
 	 */
 	private void generateDominos(int numberOfDominos)		// Génère X dominos
-	{														// A modifier : génération aléatoire ? Préconçue selon un XML ?
-		for(int i=1 ; i<=numberOfDominos ; i++)
-		{
-			this.availableDominos.add(new Domino(i)); //TODO
+	{		
+		ArrayList<Integer> list48Dominos = new ArrayList<Integer>();
+		for(int i=1 ; i<=48 ; i++){
+			list48Dominos.add(i);
+		}//end for
+		Collections.shuffle(list48Dominos);
+		ArrayList<Integer> listSorted = new ArrayList<Integer>();
+		//ArrayList<Domino> listDomino = new ArrayList<Domino>();
+		for (int i = 1; i<= numberOfDominos; i++) {
+			listSorted.add(list48Dominos.get(i));
 		}
-	}
+		listSorted.sort(null);
+		for (int i : listSorted) {
+			this.availableDominos.add(new Domino(i));
+		}
+		
+	}//end method
 
 	/**
-	 * Method to draw a set number a set number of dominos.
+	 * Method to draw a set number of dominos.
 	 * <p>
 	 * According to the number of players, draws a certain amount of dominos
 	 * depending from the number of players from the library and adds them to 
@@ -180,8 +191,12 @@ public class Game
 		return turnOrder;
 	}
 	
-	/* Bien mettre le fichier csv dans le projet (src)
-	 * Renvoit Domnino contenant : index cell1 cell2
+	/**
+	 * Ne pas oublier d'ajouter le fichier csv dans le projet
+	 * Renvoie Domino contenant index, cell1, cell2
+	 * @param index
+	 * @author Batelier
+	 * @return Domino
 	 */
 	public Domino dominoParser(int index){
 		//Domino contenant index, cell1, cell2
