@@ -226,7 +226,7 @@ public class Game
                     terrainType2 = domino[3];
                     cell1 = new Cell(crownNb1, terrainType1);
                     cell2 = new Cell(crownNb2, terrainType2);
-                    dominoParse = new Domino(index, cell1, cell2);
+                    dominoParse = new Domino(index-1, cell1, cell2);
                     
                     String indexFormated = "";
                     if((index-1) < 10)
@@ -236,7 +236,7 @@ public class Game
                     indexFormated += String.valueOf(index-1);
                     
                     String terrain1 = terrainType1;
-                    if(!terrainType1.equals("montagne"))
+                    if(!terrainType1.equals("Montagne"))
                     {
                     	terrain1  += '\t';
                     }
