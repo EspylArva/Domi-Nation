@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 
 
-public final class Game
+public class Game
 {
 
 
@@ -53,7 +53,7 @@ public final class Game
 	 * @author 						Baptiste ROBERJOT
 	 * @date						Last updated on 21.12.2018
 	 */
-	private void generateDominos(int numberOfDominos)		// Génère X dominos
+	public void generateDominos(int numberOfDominos)		// Génère X dominos
 	{		
 		ArrayList<Integer> list48Dominos = new ArrayList<Integer>();
 		for(int i=1 ; i<=48 ; i++){
@@ -62,12 +62,12 @@ public final class Game
 		Collections.shuffle(list48Dominos);
 		ArrayList<Integer> listSorted = new ArrayList<Integer>();
 		//ArrayList<Domino> listDomino = new ArrayList<Domino>();
-		for (int i = 1; i<= numberOfDominos; i++) {
+		for (int i = 0; i< numberOfDominos; i++) {
 			listSorted.add(list48Dominos.get(i));
 		}
 		listSorted.sort(null);
 		for (int i : listSorted) {
-			this.availableDominos.add(new Domino(i));
+			this.availableDominos.add(dominoParser(i));
 		}
 		
 	}//end method
@@ -234,8 +234,14 @@ public final class Game
                     	indexFormated += "0";
                 	}
                     indexFormated += String.valueOf(index-1);
+                    
+                    String terrain1 = terrainType1;
+                    if(!terrainType1.equals("montagne"))
+                    {
+                    	terrain1  += '\t';
+                    }
                     System.out.println("Domino n" + indexFormated + " : " + '\t'
-                    		+ "Crown Nb1 : " + crownNb1+ " | Type terrain1 : "+ terrainType1  + '\t'
+                    		+ "Crown Nb1 : " + crownNb1+ " | Type terrain1 : "+ terrain1  + '\t'
                     		+ " | Crown Nb2 : "+crownNb2+ " | Type terrain2 : "+terrainType2 );
                     // Domino n32 :
                     
@@ -251,6 +257,111 @@ public final class Game
 		System.out.println("404 Not found");
 		return dominoParse;	
 	}
+	
+	/**
+	 * Based on the game's rules, designates a winner if it is possible.
+	 * <p>
+	 * The winner is designated as follows, according to the game's rules: 
+	 * The player with highest score wins; if multiple players share the 
+	 * highest score, the player with the largest kingdom wins; if multiple 
+	 * players share both highest score and largest kingdom, the player who 
+	 * gathered the most crowns on his kingdom wins.
+	 * <p>
+	 * If all those criteria fail to designate a winner, none shall be 
+	 * victorious.
+	 * <p>
+	 * @return		Winner of the game, or null if no winner can be designated.
+	 * @author 		Tchong-Kite HUAM
+	 * @date 		last updated on 26.12.2018
+	 */
+	public Player returnWinner()
+	{
+		ArrayList<Player> winners = new ArrayList<Player>();
+		ArrayList<Player> tmpWinners = new ArrayList<Player>();
+		int maxTmpCriteria = 0;
+		for(Player player : players)
+		{
+			player.setPoints(player.getKingdomMap().returnScore());
+			if(player.getPoints() > maxTmpCriteria)
+			{
+				winners.clear();
+				winners.add(player);
+			}
+			else if(player.getPoints() == maxTmpCriteria)
+			{
+				winners.add(player);
+			}
+			else
+			{
+				// nothing happens
+			}
+		}
+		
+		if(winners.size() == 1)
+		{
+			return winners.get(0);
+		}
+		else		// draw on score
+		{
+			maxTmpCriteria = 0;
+			tmpWinners.addAll(winners);
+			winners.clear();
+			for(Player player : tmpWinners)
+			{
+				if(player.getKingdomMap().getExactSize() > maxTmpCriteria)
+				{
+					winners.clear();
+					winners.add(player);
+				}
+				else if(player.getKingdomMap().getExactSize() == maxTmpCriteria)
+				{
+					winners.add(player);
+				}
+				else
+				{
+					// nothing happens
+				}
+			}
+			
+			if(winners.size() == 1)
+			{
+				return winners.get(0);
+			}
+			else		// draw on size
+			{
+				maxTmpCriteria = 0;
+				tmpWinners.clear();
+				tmpWinners.addAll(winners);
+				winners.clear();
+				for(Player player : tmpWinners)
+				{
+					if(player.getKingdomMap().getExactCrowns() > maxTmpCriteria)
+					{
+						winners.clear();
+						winners.add(player);
+					}
+					else if(player.getKingdomMap().getExactCrowns() == maxTmpCriteria)
+					{
+						winners.add(player);
+					}
+					else
+					{
+						// nothing happens
+					}
+				}
+				
+				if(winners.size() == 1)
+				{
+					return winners.get(0);
+				}
+				else
+				{
+					return null;
+				}
+			}	
+		}
+	}
+	
 	//////////////////////////////////////////////////////////////
 	// 						CONSTRUCTOR							//
 	//////////////////////////////////////////////////////////////
@@ -347,7 +458,7 @@ public final class Game
     {
     	if(INSTANCE == null)
     	{
-    		INSTANCE = new Game(2);
+    		INSTANCE = new Game(utils.numbPlayers);
     	}
 		return INSTANCE;    		
 
