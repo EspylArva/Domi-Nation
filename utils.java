@@ -3,7 +3,13 @@ public class utils {
 	
 	static public int mapSize = 9;
 	static public String gameMod = "default";
-	static public int numbPlayers = 2;
+	static public int numbPlayers = 0;
+	static public boolean play = false;
+	static public String name1;
+	static public String name2;
+	static public String name3;
+	static public String name4;
+	
 
 	//////////////////////////////////////////////////////////////
 	// 						VARIABLES							//

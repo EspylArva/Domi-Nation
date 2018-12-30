@@ -1,3 +1,4 @@
+import java.awt.Menu;
 import java.io.IOException;
 import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Scanner;
+import java.util.Timer;
 import java.util.function.UnaryOperator;
 
 import javax.swing.JFrame;
@@ -119,10 +121,22 @@ public class main {
 									//								1 deck de X * 12 dominos (ici 2*12 = 24)
 																//								2 joueurs et leur distribue un domino, en l'enlevant du deck
 																//								X rois (ici 4, car 2*2 ; on aurait pu avoir 3 ou 4)
-
-	
-		Game.getInstance().setChoice(Game.getInstance().distribDominos());							// On pioche X dominos et on les affiche : ici 4 rois, donc 4 dominos
+		/**
+		 * Block pour attendre que tous les paramètres requis soient
+		 * bien rempli dans la fenêtre menu
+		 */
+		MenuWindow menu = new MenuWindow();
+		while (!utils.play) {
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		menu.dispose(); //ferme le menu
 		
+		Game.getInstance().setChoice(Game.getInstance().distribDominos());							// On pioche X dominos et on les affiche : ici 4 rois, donc 4 dominos
+		System.out.println("stop");
 		ArrayList<Player> turnX = Game.getInstance().randomizeKings();       	// On mélange les rois pour distribuer les dominos aléatoirement
 
 	    disp(Game.getInstance());

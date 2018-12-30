@@ -26,6 +26,8 @@ public class Game
 	// 						 METHODS							//
 	//////////////////////////////////////////////////////////////
 	/**
+	 *   //unused @author Batelier
+	 * 
 	 * Allows the game to define a precise number of players. Defining a player
 	 * is possible through defining its name.
 	 * <p>
@@ -37,9 +39,21 @@ public class Game
 		Scanner scan = new Scanner(System.in);
 		for(int i=0 ; i<numberOfPlayers ; i++)
 		{
-			System.out.println("Entrez un nom de joueur : ");
-			String name = scan.nextLine();
-//			scan.next();
+			String name = "She has no name";
+			switch (i) {
+			case 0:
+				name = utils.name1;
+				break;
+			case 1:
+				name = utils.name2;
+				break;
+			case 2:
+				name = utils.name3;
+				break;
+			case 3:
+				name = utils.name4;
+				break;
+			}
 			Player player = new Player(name);
 			this.players.add(player);
 		}
