@@ -18,7 +18,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.imageio.ImageIO;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.RootPaneContainer;
@@ -45,6 +48,9 @@ public class GameWindow extends JFrame {
 	CardLayout ongletLayoutTerrains = new CardLayout();
 	JPanel ongletTerrains = new JPanel();
 	String[] listOngletTerrains = {"1", "2", "3", "4"};
+	
+	//pioche
+	private PiocheGraphic pioche = new PiocheGraphic();
 	
 	//constructor
 	public GameWindow() {
@@ -89,7 +95,6 @@ public class GameWindow extends JFrame {
 		listOfTerrain.get(1).getComponent(5).setBackground(Color.blue); //methode de la magie
 		
 		//pioche -------------------------------------------------------------------------
-		PiocheGraphic pioche = new PiocheGraphic();
 		game.add(pioche);
 		pioche.setBounds((int) (3*fullScreen.getWidth()/4), (int)fullScreen.getHeight()/2-pioche.getHeight(), pioche.getWidth(), pioche.getHeight());
 		
@@ -140,6 +145,56 @@ public class GameWindow extends JFrame {
 			}
 			
 		}//paintComponent
+	}
+	
+	//======================================================================= Pioche Graphic Method
+
+	/**
+	 * gère l'affichage de la pioche
+	 * @author Batelier
+	 * @param arrayListDomino
+	 */
+	public void dispPioche(ArrayList<Domino> arrayListDomino) {
+		//arraylist posistion de la pioche en cours dans le gridLayout
+		ArrayList<Integer> listPosPioche = new ArrayList<>(Arrays.asList(0,1,5,6,10,11,15,16));
+		int compteur = 0;
+		for (int i = 0; i < arrayListDomino.size(); i++) {
+			drawPiocheCell(listPosPioche.get(compteur), arrayListDomino.get(i).getCell1());
+			compteur ++;
+			drawPiocheCell(listPosPioche.get(compteur), arrayListDomino.get(i).getCell2());
+			compteur ++;
+		}
+		
+	}
+	
+	//-----------------------------------------------------------------------
+	
+	public void drawPiocheCell(int pos, Cell cell) {
+		pioche.getComponent(pos).setBackground(terrainColor(cell.getTerrainType()));
+		//System.out.println(pioche.getComponent(pos));
+		pioche.getComponent(pos);
+		Icon i = new ImageIcon("src/image/1crown.png");
+		//pioche.getComponent(pos)).paintComponent(i);
+		//pioche.getComponent(pos).pain
+		//pioche.setCompo
+	}
+	
+	//-----------------------------------------------------------------------
+	
+	/**
+	 * @author Batelier
+	 * @param str
+	 * @return Color de la cell
+	 */
+	public Color terrainColor(String str) {
+		if (str.equals("Champs")) {return Color.orange;}
+		else if (str.equals("Prairie")) {return Color.yellow;}
+		else if (str.equals("Mer")) {return Color.blue;}
+		else if (str.equals("Montagne")) {return Color.black;}
+		else if (str.equals("Mine")) {return Color.gray;}
+		else if (str.equals("Foret")) {return Color.green;}
+		return null;
+		
 	}
 	
 	//-----------------------------------------------------------------------

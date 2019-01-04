@@ -209,8 +209,12 @@ public class Game
 		return turnOrder;
 	}
 	
-	/* Bien mettre le fichier csv dans le projet (src)
+	/**
+	 * Bien mettre le fichier csv dans le projet (src)
 	 * Renvoit Domnino contenant : index cell1 cell2
+	 * @author Batelier
+	 * @param index
+	 * @return Domino
 	 */
 	public Domino dominoParser(int index){
 		//Domino contenant index, cell1, cell2

@@ -136,13 +136,15 @@ public class main {
 		}
 		menu.dispose(); //ferme le menu
 		
-		GameWindow game = new GameWindow();
+		/////////////////////////////////////////////
+		GameWindow gameGraphic = new GameWindow();///  gameGraphic  
+		/////////////////////////////////////////////
 		
 		Game.getInstance().setChoice(Game.getInstance().distribDominos());							// On pioche X dominos et on les affiche : ici 4 rois, donc 4 dominos
 		System.out.println("stop");
 		ArrayList<Player> turnX = Game.getInstance().randomizeKings();       	// On mélange les rois pour distribuer les dominos aléatoirement
 
-	    disp(Game.getInstance());
+	    disp(Game.getInstance(), gameGraphic);
 	    /*
 	    //TODO ALERT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	    for(Domino d : Game.getInstance().getAvailableDominos())
@@ -155,6 +157,7 @@ public class main {
 	    */
 	    
 	    // Affiche l'ordre du 1er tour
+	    System.out.println("Taras");
 	    for(Player i : turnX) 	{System.out.print(i.getName() + " ");}  System.out.println();
 // TOUR N°1
 	    for (Player i : turnX) // On peut remplacer turnX par Game.getInstance().randomizeKings() SSI on enlève le display de l'ordre du 1er tour (sinon, deux objets)
@@ -174,7 +177,7 @@ public class main {
 	    {
 	    	Game.getInstance().setChoice(Game.getInstance().distribDominos());							// On repioche 3-4 dominos pour constituer une nouvelle pioche
 	    
-		    disp(Game.getInstance());
+		    disp(Game.getInstance(), gameGraphic);
 		    
 		    // On doit récupérer l'id le plus faible parmi l'ancienne pioche et faire jouer le joueur en mettant son domino sur le terrain
 	
@@ -214,7 +217,7 @@ public class main {
 		    	System.out.println();
 		    }
 		    
-		    disp(Game.getInstance());
+		    disp(Game.getInstance(), gameGraphic);
 	    }// Fin du while(!Game.getInstance().getAvailableDominos.isEmpty())		<-- fin du : tant que la bibliotheque n'est pas vide
 	    
 	    // Get winner ?
@@ -303,7 +306,7 @@ public class main {
 		}
 	}
 
-	public static void disp(Game game)
+	public static void disp(Game game, GameWindow gameGraphic)
 	{
 		System.out.print("BIBLIOTHEQUE : ");
 		for (Domino i : Game.getInstance().getAvailableDominos())
@@ -317,11 +320,18 @@ public class main {
 	    	System.out.println('\t' + i.getName() +'\t' + " : " + i.showHand());
 	    }
 	    System.out.print("PIOCHE : \n");
+	    
+	    //Affcichage graphique de la pioche
+	    ArrayList<Domino> piocheDomino = new ArrayList<Domino>();
 	    for(Domino i : Game.getInstance().getChoice())
 	    {
 //	    	System.out.print(i.getIndex() + " ");
-	    	Game.getInstance().dominoParser(i.getIndex());
+	    	piocheDomino.add(Game.getInstance().dominoParser(i.getIndex()));
 	    }
+	    gameGraphic.dispPioche(piocheDomino); //methode affichage
+	    piocheDomino.clear();
+	    //fin affichage graphique de la pioche
+	    
 	    System.out.println();
 	    System.out.print("ANCIENNE PIOCHE : ");
 	    for(Domino i : Game.getInstance().getOldChoice())

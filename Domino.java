@@ -97,4 +97,12 @@ public class Domino implements Comparable<Domino> {
 		this.cells[1] = cell2;
 	}
 	
+	public Cell getCell1() {
+		return this.cells[0];
+	}
+	
+	public Cell getCell2() {
+		return this.cells[1];
+	}
+	
 }
