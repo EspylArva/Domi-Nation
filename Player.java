@@ -46,11 +46,16 @@ public class Player {
 		while(! listOfDominoIndex.contains(choice))
 		{			
 			System.out.println(this.name + ", quel domino souhaitez-vous ajouter à votre bibliothèque ?");
+			try {
 			choice = scan.nextInt();
+			} catch (Exception e) {
+				//System.out.println();
+			}
 			if(! listOfDominoIndex.contains(choice))
 			{
 				System.out.println("Veuillez selectionner un domino disponible");
 			}
+			scan.nextLine();
 		}
 		for(Domino i : availableDominos)
 		{

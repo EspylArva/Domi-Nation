@@ -124,6 +124,7 @@ public class main {
 		/**
 		 * Block pour attendre que tous les paramètres requis soient
 		 * bien rempli dans la fenêtre menu
+		 * @author Batelier
 		 */
 		MenuWindow menu = new MenuWindow();
 		while (!utils.play) {
@@ -134,6 +135,8 @@ public class main {
 			}
 		}
 		menu.dispose(); //ferme le menu
+		
+		GameWindow game = new GameWindow();
 		
 		Game.getInstance().setChoice(Game.getInstance().distribDominos());							// On pioche X dominos et on les affiche : ici 4 rois, donc 4 dominos
 		System.out.println("stop");
