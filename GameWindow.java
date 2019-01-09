@@ -18,13 +18,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.imageio.ImageIO;
+import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.RootPaneContainer;
+
+
+
+
 
 /**
  * Fenetre ingame
@@ -52,18 +58,21 @@ public class GameWindow extends JFrame {
 	//pioche
 	private PiocheGraphic pioche = new PiocheGraphic();
 	
+	//utils
+	private Dimension fullScreen = Toolkit.getDefaultToolkit().getScreenSize();
+	private JPanel game = new BackgroundPanel();
+	
 	//constructor
 	public GameWindow() {
 		//Code JFrame base
 		this.setTitle("DomiNations"); //titre
-		Dimension fullScreen = Toolkit.getDefaultToolkit().getScreenSize();
+		
 		this.setSize(fullScreen); //taille de la fenetre
 		//this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //quitter le programme quand croix
 		this.setLocationRelativeTo(null); //centrer
 		//fin Code JFrame
 		
 		//Onglet jeu =====================================================================
-		JPanel game = new BackgroundPanel();
 		game.setLayout(null);
 		//game.setBackground(Color.gray);
 		JButton btnShowRoyaumes = new JButton("Consulter les royaumes");
@@ -101,6 +110,13 @@ public class GameWindow extends JFrame {
 		//Affichage des points -----------------------------------------------------------
 		
 		//Labels -------------------------------------------------------------------------
+		     //police à augmenter
+		JLabel labelNewPioche = new JLabel("Nouvelle pioche");
+		JLabel labelOldPioche = new JLabel("Ancienne pioche");
+		labelNewPioche.setBounds(pioche.getX(), pioche.getY() - 80, 200, 100);
+		labelOldPioche.setBounds(pioche.getX() + 150, pioche.getY() - 80, 200, 100);
+		game.add(labelNewPioche);
+		game.add(labelOldPioche);
 		
 		//Onglet consultation des royaumes ===============================================
 		JPanel royaumes = new JPanel();
@@ -129,7 +145,7 @@ public class GameWindow extends JFrame {
 	//-----------------------------------------------------------------------
 	
 	/**
-	 * JPanel + image de fond
+	 * JPanel background : image de fond
 	 * @author Batelier
 	 */
 	class BackgroundPanel extends JPanel{
@@ -152,50 +168,74 @@ public class GameWindow extends JFrame {
 	/**
 	 * gère l'affichage de la pioche
 	 * @author Batelier
-	 * @param arrayListDomino
+	 * @param arrayListDomino --> les dominos de la pioche
 	 */
 	public void dispPioche(ArrayList<Domino> arrayListDomino) {
+		//idée 2:
 		//arraylist posistion de la pioche en cours dans le gridLayout
-		ArrayList<Integer> listPosPioche = new ArrayList<>(Arrays.asList(0,1,5,6,10,11,15,16));
-		int compteur = 0;
-		for (int i = 0; i < arrayListDomino.size(); i++) {
-			drawPiocheCell(listPosPioche.get(compteur), arrayListDomino.get(i).getCell1());
-			compteur ++;
-			drawPiocheCell(listPosPioche.get(compteur), arrayListDomino.get(i).getCell2());
-			compteur ++;
+//		pioche.setVisible(false);
+//		PiocheGraphic pioche2 = new PiocheGraphic(arrayListDomino);
+//		game.add(pioche2);
+//		pioche2.setBounds((int) (3*fullScreen.getWidth()/4), (int)fullScreen.getHeight()/2-pioche.getHeight(), pioche.getWidth(), pioche.getHeight());
+//		pioche2.setVisible(true);
+		
+		//idée 1 :
+//		ArrayList<Integer> listPosPioche = new ArrayList<>(Arrays.asList(0,1,5,6,10,11,15,16));
+//		int compteur = 0;
+//		for (int i = 0; i < arrayListDomino.size(); i++) {
+//			drawPiocheCell(listPosPioche.get(compteur), arrayListDomino.get(i).getCell1());
+//			compteur ++;
+//			drawPiocheCell(listPosPioche.get(compteur), arrayListDomino.get(i).getCell2());
+//			compteur ++;
+//		}
+		
+		//last idea :
+		//changer list de Domino en list de Cell
+		ArrayList<Cell> listOfCell = new ArrayList<Cell>();
+		for(Domino dom : arrayListDomino) {
+			listOfCell.add(dom.getCell1());
+			listOfCell.add(dom.getCell2());
 		}
 		
-	}
-	
-	//-----------------------------------------------------------------------
-	
-	public void drawPiocheCell(int pos, Cell cell) {
-		pioche.getComponent(pos).setBackground(terrainColor(cell.getTerrainType()));
-		//System.out.println(pioche.getComponent(pos));
-		pioche.getComponent(pos);
-		Icon i = new ImageIcon("src/image/1crown.png");
-		//pioche.getComponent(pos)).paintComponent(i);
-		//pioche.getComponent(pos).pain
-		//pioche.setCompo
-	}
-	
-	//-----------------------------------------------------------------------
-	
-	/**
-	 * @author Batelier
-	 * @param str
-	 * @return Color de la cell
-	 */
-	public Color terrainColor(String str) {
-		if (str.equals("Champs")) {return Color.orange;}
-		else if (str.equals("Prairie")) {return Color.yellow;}
-		else if (str.equals("Mer")) {return Color.blue;}
-		else if (str.equals("Montagne")) {return Color.black;}
-		else if (str.equals("Mine")) {return Color.gray;}
-		else if (str.equals("Foret")) {return Color.green;}
-		return null;
+		pioche.updatePioche(listOfCell);
+		
+
 		
 	}
+	
+	//-----------------------------------------------------------------------
+	
+//	public void drawPiocheCell(int pos, Cell cell) {
+//		pioche.getComponent(pos).setBackground(terrainColor(cell.getTerrainType()));
+//		this.remove(pioche);
+//		if (cell.getCrownNb()>0) {
+//
+//			pioche.remove(pos);
+//			JButton btn = new JButton();
+//
+//			pioche.add(btn, pos);
+//			
+//		}
+//		
+//	}
+	
+	//-----------------------------------------------------------------------
+//	/**
+//	 * @author Batelier
+//	 * @param str
+//	 * @return Color de la cell
+//	 */
+//	public Color terrainColor(String str) {
+//		if (str.equals("Champs")) {return Color.orange;}
+//		else if (str.equals("Prairie")) {return Color.yellow;}
+//		else if (str.equals("Mer")) {return Color.blue;}
+//		else if (str.equals("Montagne")) {return Color.black;}
+//		else if (str.equals("Mine")) {return Color.gray;}
+//		else if (str.equals("Foret")) {return Color.green;}
+//		return null;
+//		
+//	}
+	
 	
 	//-----------------------------------------------------------------------
 	
