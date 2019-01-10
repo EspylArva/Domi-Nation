@@ -29,9 +29,6 @@ import javax.swing.JPanel;
 import javax.swing.RootPaneContainer;
 
 
-
-
-
 /**
  * Fenetre ingame
  * CardLayout contient jeu et consultation de royaumes
@@ -169,75 +166,35 @@ public class GameWindow extends JFrame {
 	 * gère l'affichage de la pioche
 	 * @author Batelier
 	 * @param arrayListDomino --> les dominos de la pioche
+	 * @param turnOrder --> l'ordre de jeu des Player
 	 */
-	public void dispPioche(ArrayList<Domino> arrayListDomino) {
-		//idée 2:
-		//arraylist posistion de la pioche en cours dans le gridLayout
-//		pioche.setVisible(false);
-//		PiocheGraphic pioche2 = new PiocheGraphic(arrayListDomino);
-//		game.add(pioche2);
-//		pioche2.setBounds((int) (3*fullScreen.getWidth()/4), (int)fullScreen.getHeight()/2-pioche.getHeight(), pioche.getWidth(), pioche.getHeight());
-//		pioche2.setVisible(true);
-		
-		//idée 1 :
-//		ArrayList<Integer> listPosPioche = new ArrayList<>(Arrays.asList(0,1,5,6,10,11,15,16));
-//		int compteur = 0;
-//		for (int i = 0; i < arrayListDomino.size(); i++) {
-//			drawPiocheCell(listPosPioche.get(compteur), arrayListDomino.get(i).getCell1());
-//			compteur ++;
-//			drawPiocheCell(listPosPioche.get(compteur), arrayListDomino.get(i).getCell2());
-//			compteur ++;
-//		}
-		
-		//last idea :
+	public void dispPioche(ArrayList<Domino> arrayListDomino, ArrayList<Player> turnOrder) {
+		//idée 3 :
 		//changer list de Domino en list de Cell
+		
+		//QUE FAIT ON DE L'ARRAYLIST PLAYER (pour affichage des rois et ordre de jeu etc)
+		
+		
 		ArrayList<Cell> listOfCell = new ArrayList<Cell>();
 		for(Domino dom : arrayListDomino) {
 			listOfCell.add(dom.getCell1());
 			listOfCell.add(dom.getCell2());
 		}
 		
-		pioche.updatePioche(listOfCell);
-		
-
-		
+		pioche.updatePioche(listOfCell, turnOrder);	
 	}
 	
-	//-----------------------------------------------------------------------
-	
-//	public void drawPiocheCell(int pos, Cell cell) {
-//		pioche.getComponent(pos).setBackground(terrainColor(cell.getTerrainType()));
-//		this.remove(pioche);
-//		if (cell.getCrownNb()>0) {
-//
-//			pioche.remove(pos);
-//			JButton btn = new JButton();
-//
-//			pioche.add(btn, pos);
-//			
-//		}
-//		
-//	}
-	
-	//-----------------------------------------------------------------------
-//	/**
-//	 * @author Batelier
-//	 * @param str
-//	 * @return Color de la cell
-//	 */
-//	public Color terrainColor(String str) {
-//		if (str.equals("Champs")) {return Color.orange;}
-//		else if (str.equals("Prairie")) {return Color.yellow;}
-//		else if (str.equals("Mer")) {return Color.blue;}
-//		else if (str.equals("Montagne")) {return Color.black;}
-//		else if (str.equals("Mine")) {return Color.gray;}
-//		else if (str.equals("Foret")) {return Color.green;}
-//		return null;
-//		
-//	}
-	
-	
-	//-----------------------------------------------------------------------
+
+	//=====================================================================
+	//GETTERS SETTERS
+	public PiocheGraphic getPioche() {
+		return pioche;
+	}
+
+	public void setPioche(PiocheGraphic pioche) {
+		this.pioche = pioche;
+	}
+	//=====================================================================
 	
 }//GameWindow class
 

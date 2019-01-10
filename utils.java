@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 
 public class utils {
 	
@@ -5,10 +6,15 @@ public class utils {
 	static public String gameMod = "default";
 	static public int numbPlayers = 0;
 	static public boolean play = false;
+	static public boolean choiceDone = false;
 	static public String name1;
 	static public String name2;
 	static public String name3;
 	static public String name4;
+	static public String colorJ1;
+	static public String colorJ2;
+	static public String colorJ3;
+	static public String colorJ4;
 	
 
 	//////////////////////////////////////////////////////////////

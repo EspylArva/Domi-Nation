@@ -27,7 +27,7 @@ public class main {
 			
 //TODO: TESTER LES REGLES "Dynastie" ET "Harmonie"
             
-            Player player = new Player("François");
+            Player player = new Player("François", "blue");
 //          Player player2 = new Player("Jean");
             Domino domino = new Domino(24, new Cell(3, "Forêt"), new Cell(0, "Mer"));
             player.addToHand(domino);
@@ -122,8 +122,9 @@ public class main {
 									//								1 deck de X * 12 dominos (ici 2*12 = 24)
 																//								2 joueurs et leur distribue un domino, en l'enlevant du deck
 																//								X rois (ici 4, car 2*2 ; on aurait pu avoir 3 ou 4)
+        //////////////////////////////////////////////////////////// //
 		/**
-		 * Block pour attendre que tous les paramètres requis soient
+		 * Block pour attendre que tous les paramètres requis soient  //
 		 * bien rempli dans la fenêtre menu
 		 * @author Batelier
 		 */
@@ -137,15 +138,14 @@ public class main {
 		}
 		menu.dispose(); //ferme le menu
 		
-		/////////////////////////////////////////////
 		GameWindow gameGraphic = new GameWindow();///  gameGraphic  
-		/////////////////////////////////////////////
+		////////////////////////////////////////////////////////////
 		
 		Game.getInstance().setChoice(Game.getInstance().distribDominos());							// On pioche X dominos et on les affiche : ici 4 rois, donc 4 dominos
 		System.out.println("stop");
 		ArrayList<Player> turnX = Game.getInstance().randomizeKings();       	// On mélange les rois pour distribuer les dominos aléatoirement
 
-	    disp(Game.getInstance(), gameGraphic);
+	    disp(Game.getInstance(), gameGraphic, turnX);
 	    /*
 	    //TODO ALERT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	    for(Domino d : Game.getInstance().getAvailableDominos())
@@ -158,27 +158,35 @@ public class main {
 	    */
 	    
 	    // Affiche l'ordre du 1er tour
-	    System.out.println("Taras");
 	    for(Player i : turnX) 	{System.out.print(i.getName() + " ");}  System.out.println();
 // TOUR N°1
 	    for (Player i : turnX) // On peut remplacer turnX par Game.getInstance().randomizeKings() SSI on enlève le display de l'ordre du 1er tour (sinon, deux objets)
 	    {
-	    	Domino pick = i.selectDomino(Game.getInstance().getChoice());
+	    	//Domino pick = i.selectDomino(Game.getInstance().getChoice());
 	    	
-		    		
+	    	////////////////////////////////////////////////////////////////////////
+	    	Domino pick = gameGraphic.getPioche().getPickDomino(i);
+	    	while (!utils.choiceDone) {  //mettre une condition valable
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			} utils.choiceDone = false; //reset le choix
+	    	////////////////////////////////////////////////////////////////////////
+	
 	    	i.addToHand(pick);									// Chaque joueur choisit un domino parmi la pioche
 	    	Game.getInstance().getOldChoice().add(pick);								// On passe les dominos choisis dans la pioche des anciens dominos
 	    	Game.getInstance().getChoice().remove(pick);								// On enleve les dominos choisis des options possibles
 	    }														
-	    
-	    
+	    	    
 	    
 // TOUR N°X
 	    while(!Game.getInstance().getAvailableDominos().isEmpty())
 	    {
 	    	Game.getInstance().setChoice(Game.getInstance().distribDominos());							// On repioche 3-4 dominos pour constituer une nouvelle pioche
 	    
-		    disp(Game.getInstance(), gameGraphic);
+		    disp(Game.getInstance(), gameGraphic, Game.getInstance().getTurnOrder());
 		    
 		    // On doit récupérer l'id le plus faible parmi l'ancienne pioche et faire jouer le joueur en mettant son domino sur le terrain
 	
@@ -209,16 +217,19 @@ public class main {
 		    	Move move = moves.get(i);														// choix du move
 		    	
 		    	player.setKingdomMap(player.returnFutureMap(move, player.getKingdomMap()));		// joue le domino/move sur le terrain
-		    	player.getDominoInHands().remove(move.getDomino());				// Enlève le domino après l'avoir joué
+		    	player.getDominoInHands().remove(move.getDomino());				// Enlève le domino de la main après l'avoir joué
 		    	
+		    	//////////////////////////////////////////////////////////////////
+		    	//A remplacer par methode graphique
 		    	Domino pick = player.selectDomino(Game.getInstance().getChoice());
+		    	//////////////////////////////////////////////////////////////////
 			    player.addToHand(pick);
 			    Game.getInstance().getOldChoice().add(pick);
 			    Game.getInstance().getChoice().remove(pick);
 		    	System.out.println();
 		    }
 		    
-		    disp(Game.getInstance(), gameGraphic);
+		    disp(Game.getInstance(), gameGraphic, Game.getInstance().getTurnOrder());
 	    }// Fin du while(!Game.getInstance().getAvailableDominos.isEmpty())		<-- fin du : tant que la bibliotheque n'est pas vide
 	    
 	    // Get winner ?
@@ -307,7 +318,7 @@ public class main {
 		}
 	}
 
-	public static void disp(Game game, GameWindow gameGraphic)
+	public static void disp(Game game, GameWindow gameGraphic, ArrayList<Player> turnOrder)
 	{
 		System.out.print("BIBLIOTHEQUE : ");
 		for (Domino i : Game.getInstance().getAvailableDominos())
@@ -322,17 +333,23 @@ public class main {
 	    }
 	    System.out.print("PIOCHE : \n");
 	    
-	    //Affcichage graphique de la pioche
+	    //////////////////////////////////////////////////////////////////////////
+	    //Affichage graphique de la pioche + rois
 	    ArrayList<Domino> piocheDomino = new ArrayList<Domino>();
+	    //tri ordre dominos pour affichage graphique
+	    ArrayList<Integer> indexDominoSort = new ArrayList<Integer>();
 	    for(Domino i : Game.getInstance().getChoice())
 	    {
-//	    	System.out.print(i.getIndex() + " ");
-	    	piocheDomino.add(Game.getInstance().dominoParser(i.getIndex()));
+	    	indexDominoSort.add(i.getIndex());
 	    }
-	    gameGraphic.dispPioche(piocheDomino); //methode affichage
+	    indexDominoSort.sort(null);
+	    for(int i : indexDominoSort) {
+	    	piocheDomino.add(Game.getInstance().dominoParser(i));
+	    }
+	    gameGraphic.dispPioche(piocheDomino, turnOrder); //methode affichage pioche
 	    piocheDomino.clear();
 	    //fin affichage graphique de la pioche
-	    
+	    //////////////////////////////////////////////////////////////////////////
 	    
 	    System.out.println();
 	    System.out.print("ANCIENNE PIOCHE : ");

@@ -1,17 +1,21 @@
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.List;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.LineListener;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -33,6 +37,11 @@ public class MenuWindow extends JFrame{
 	private JTextField nom2 = new JTextField("Joueur 2");
 	private JTextField nom3 = new JTextField("Joueur 3");
 	private JTextField nom4 = new JTextField("Joueur 4");
+	private JComboBox<String> colorBox1 = new JComboBox<String>();
+	private JComboBox<String> colorBox2 = new JComboBox<String>();
+	private JComboBox<String> colorBox3 = new JComboBox<String>();
+	private JComboBox<String> colorBox4 = new JComboBox<String>();
+	ArrayList<JComboBox> comboList = new ArrayList<JComboBox>(Arrays.asList(colorBox1, colorBox2, colorBox3, colorBox4));
 	private int nbJoueurs = 0;
 
 	public MenuWindow() {
@@ -54,13 +63,60 @@ public class MenuWindow extends JFrame{
 			menu.add(btns);
 		}
 
-		//Rendre invisible et disable les entrees noms
+		//Rendre invisible et disable les entrees noms et couleurs
 		ArrayList<JTextField> textFieldlist = new ArrayList<JTextField>(Arrays.asList(nom1, nom2, nom3, nom4));
 		for (JTextField noms : textFieldlist) {
 			noms.setVisible(false);
 			menu.add(noms);
 		}
-
+		ArrayList<JComboBox> comboList = new ArrayList<JComboBox>(Arrays.asList(colorBox1, colorBox2, colorBox3, colorBox4));
+		ArrayList<String> availableColor = new ArrayList<String>(Arrays.asList("Rouge", "Bleu", "Orange", "Vert"));
+		int initColor = 0;
+		for (JComboBox comboBox : comboList) {
+			for (String str : availableColor) {
+				comboBox.addItem(str);
+			}
+			comboBox.setSelectedIndex(initColor);
+			//set Color
+			switch (initColor) {
+			case 0:
+				comboBox.setForeground(Color.red);
+				break;
+			case 1:
+				comboBox.setForeground(Color.blue);
+				break;
+			case 2:
+				comboBox.setForeground(Color.orange);
+				break;
+			case 3:
+				comboBox.setForeground(Color.green);
+				break;
+			}
+			initColor ++;
+			comboBox.setVisible(false);
+			comboBox.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					switch (comboBox.getSelectedIndex()) {
+					case 0:
+						comboBox.setForeground(Color.red);
+						break;
+					case 1:
+						comboBox.setForeground(Color.blue);
+						break;
+					case 2:
+						comboBox.setForeground(Color.orange);
+						break;
+					case 3:
+						comboBox.setForeground(Color.green);
+						break;
+					}
+					
+				}
+			});
+			menu.add(comboBox);
+		}
 		//Set Position des buttons / label / texte
 		btn1j.setBounds(100, fullScreen.height/3, 100, 40);
 		btn2j.setBounds(200, fullScreen.height/3, 100, 40);
@@ -70,12 +126,16 @@ public class MenuWindow extends JFrame{
 		nom2.setBounds(150, 450, 100, 20);
 		nom3.setBounds(150, 480, 100, 20);
 		nom4.setBounds(150, 510, 100, 20);
+		colorBox1.setBounds(nom1.getX() + 110, nom1.getY(), 100, 20);
+		colorBox2.setBounds(nom2.getX() + 110, nom2.getY(), 100, 20);
+		colorBox3.setBounds(nom3.getX() + 110, nom3.getY(), 100, 20);
+		colorBox4.setBounds(nom4.getX() + 110, nom4.getY(), 100, 20);
 		
 		//set le bouton Play
 		btnplay.setBounds(900, 450, 300, 200);
 		btnplay.addActionListener(new btnPlayAction());
 		menu.add(btnplay);
-
+		
 		//Affichage
 		this.setContentPane(menu);
 		this.setVisible(true);
@@ -100,31 +160,35 @@ public class MenuWindow extends JFrame{
 			//liste bouton (code à opti)
 			ArrayList<JButton> btnJoueurList = new ArrayList<JButton>(Arrays.asList(btn1j,btn2j,btn3j,btn4j));
 			for (JButton btns : btnJoueurList) {
-				btns.setForeground(null); //reset color
+				btns.setBackground(null); //reset color
 			}
-			//Liste noms (Pour set visible ou non)
+			//Liste noms et couleurs (Pour set visible ou non)
 			ArrayList<JTextField> textFieldlist = new ArrayList<JTextField>(Arrays.asList(nom1, nom2, nom3, nom4));
 			for (JTextField noms : textFieldlist) {
 				noms.setVisible(false);
 			}
+			for (JComboBox comboBox : comboList) {
+				comboBox.setVisible(false);
+			}
 			switch (nbj) {
 			case 1:
-				btn1j.setForeground(Color.RED);
+				btn1j.setBackground(Color.lightGray);
 				break;
 			case 2:
-				btn2j.setForeground(Color.RED);
+				btn2j.setBackground(Color.lightGray);
 				break;
 			case 3:
-				btn3j.setForeground(Color.RED);
+				btn3j.setBackground(Color.lightGray);
 				break;
 			case 4:
-				btn4j.setForeground(Color.RED);
+				btn4j.setBackground(Color.lightGray);
 				break;
 			}
-			
-			//set visible les noms à saisir
+					
+			//set visible les noms et couleurs à saisir
 			for (int i = 0; i< nbj; i++) {
 				textFieldlist.get(i).setVisible(true);
+				comboList.get(i).setVisible(true);
 			}
 			
 			setNbJoueurs(nbj);
@@ -158,15 +222,31 @@ public class MenuWindow extends JFrame{
 					}
 				}
 			}
+			ArrayList<Integer> listr = new ArrayList<Integer>();
+			for (JComboBox jbox : comboList) {
+				if(jbox.isVisible()) {
+					if (!listr.contains(jbox.getSelectedIndex())) {
+						listr.add(jbox.getSelectedIndex());
+					}
+					else {
+						String msgColor = "Plusieurs joueurs ne peuvent pas avoir la même couleur !";
+						JOptionPane.showMessageDialog(menu, msgColor, "Erreur !", 2);
+						return;
+					}
+				}
+			}
 
 			utils.name1 = nom1.getText();
 			utils.name2 = nom2.getText();
 			utils.name3 = nom3.getText();
 			utils.name4 = nom4.getText();
+			utils.colorJ1 = (String) colorBox1.getSelectedItem();
+			utils.colorJ2 = (String) colorBox2.getSelectedItem();
+			utils.colorJ3 = (String) colorBox3.getSelectedItem();
+			utils.colorJ4 = (String) colorBox4.getSelectedItem();
 			if (nbJoueurs != 0) {
 				//utils.playOn = true;
 				utils.play = true;
-				menu.setVisible(false);
 			}//si nbJoueurs choisis correct
 			else {
 				String msg = "Choisir un nombre de joueur(s) !";

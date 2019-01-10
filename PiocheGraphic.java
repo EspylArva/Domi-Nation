@@ -36,6 +36,7 @@ public class PiocheGraphic extends JPanel{
 	private int height = 200;
 	private int vgap = 5;
 	private boolean tour1 = true;
+	private ArrayList<ImageIcon> oldPiocheImg = new ArrayList<ImageIcon>();
 	
 	private ArrayList<Cell> listOfOldCell = new ArrayList<Cell>();
 	
@@ -67,7 +68,7 @@ public class PiocheGraphic extends JPanel{
 	
 	//------------------------------------------------------------------
 	//Method
-	public void updatePioche(ArrayList<Cell> listOfNewCell) {
+	public void updatePioche(ArrayList<Cell> listOfNewCell, ArrayList<Player> turnOrder) {
 		//supprimer ancien affichage
 		this.setVisible(false);
 		this.removeAll();
@@ -76,20 +77,27 @@ public class PiocheGraphic extends JPanel{
 		int compteur = 0;
 		int compteurOld = 0;
 		for (int i = 0; i<this.nbPioche; i++) {
-			this.add(new PaintedButton(listOfNewCell.get(compteur))); compteur ++;
-			this.add(new PaintedButton(listOfNewCell.get(compteur))); compteur ++;
+			this.add(new PaintedButton(listOfNewCell.get(compteur), turnOrder.get(i), false)); compteur ++;
+			this.add(new PaintedButton(listOfNewCell.get(compteur), turnOrder.get(i), true)); compteur ++;
 			JButton btnVoid = new JButton(); btnVoid.setVisible(false);
 			this.add(btnVoid);
 			if (tour1) {
 				this.add(new JButton());
-				this.add(new JButton());
+				JButton btnDrawKing = new JButton();
+				btnDrawKing.setIcon(colorKing(turnOrder.get(i)));
+				this.add(btnDrawKing);
 			}
 			else {
-				this.add(new PaintedButton(listOfOldCell.get(compteurOld))); compteurOld ++;
-				this.add(new PaintedButton(listOfOldCell.get(compteurOld))); compteurOld ++;
+				JButton btn = new JButton(); btn.setIcon(oldPiocheImg.get(compteurOld));
+				compteurOld ++;
+				JButton btn2 = new JButton(); btn2.setIcon(oldPiocheImg.get(compteurOld));
+				compteurOld++;
+				this.add(btn); 
+				this.add(btn2);
+				//this.add(new JButton("YO"));this.add(new JButton("YO"));
+				
 			}
-		}
-		
+		} 
 		//afficher nouvel affichage
 		this.setVisible(true);
 		
@@ -115,7 +123,7 @@ public class PiocheGraphic extends JPanel{
 		private ImageIcon imgCrwn = new ImageIcon();
 		private ImageIcon imgFinale = new ImageIcon();
 		
-		public PaintedButton(Cell cell) {
+		public PaintedButton(Cell cell, Player player, Boolean drawKing) {
 			switch (cell.getCrownNb()) {
 			case 0:
 				break;
@@ -149,6 +157,10 @@ public class PiocheGraphic extends JPanel{
 				imgfond = new ImageIcon(new ImageIcon("src/image/foret.png").getImage().getScaledInstance(cellSize, cellSize, Image.SCALE_DEFAULT));
 				}
 			imgFinale = buildImageIcon(imgfond, imgCrwn);
+//			if (drawKing && !tour1) {
+//				imgFinale = buildImageIcon(imgFinale, colorKing(player));
+//			}
+			oldPiocheImg.add(imgFinale);
 			this.setIcon(imgFinale);
 			
 		}//fon constructor
@@ -171,6 +183,44 @@ public class PiocheGraphic extends JPanel{
 		return imgf;
 	}
 	
+	//------------------------------------------------------------------
+	/**
+	 * Renvoit l'ImageIcon de la couleur du player en paramètre
+	 * @param player
+	 * @return
+	 */
+	private ImageIcon colorKing(Player player) {
+		ImageIcon icon = new ImageIcon();
+		if (player.getColor().equals("Bleu")) {
+			icon = new ImageIcon(new ImageIcon("src/image/roi_bleu.png").getImage().getScaledInstance(cellSize, cellSize, Image.SCALE_DEFAULT));
+		} else if (player.getColor().equals("Rouge")) {
+			icon = new ImageIcon(new ImageIcon("src/image/roi_rouge.png").getImage().getScaledInstance(cellSize, cellSize, Image.SCALE_DEFAULT));
+		} else if (player.getColor().equals("Orange")) {
+			icon = new ImageIcon(new ImageIcon("src/image/roi_orange.png").getImage().getScaledInstance(cellSize, cellSize, Image.SCALE_DEFAULT));
+		} else if (player.getColor().equals("Vert")) {
+			icon = new ImageIcon(new ImageIcon("src/image/roi_vert.png").getImage().getScaledInstance(cellSize, cellSize, Image.SCALE_DEFAULT));
+		}
+		return icon;
+	}
+	
+	//------------------------------------------------------------------
+	/**
+	 * Choix Domino graphiquement
+	 * @author Batelier
+	 * @param player
+	 * @return DOmino
+	 */
+	public Domino getPickDomino(Player player) {
+		ArrayList<Integer> listInt = new ArrayList<Integer>(Arrays.asList(0,1,5,6,10,11,15,16));
+		if (nbPioche == 3) {
+			listInt = new ArrayList<Integer>(Arrays.asList(0,1,5,6,10,11));
+		}
+		
+		for (Integer i : listInt) {
+			this.getComponent(i).setEnabled(false);
+		}
+		return null;
+	}
 	//------------------------------------------------------------------
 	//GETTERS
 	public int getNbPioche() {

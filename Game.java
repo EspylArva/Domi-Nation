@@ -40,21 +40,26 @@ public class Game
 		for(int i=0 ; i<numberOfPlayers ; i++)
 		{
 			String name = "She has no name";
+			String color = "I'm color blind";
 			switch (i) {
 			case 0:
 				name = utils.name1;
+				color = utils.colorJ1;
 				break;
 			case 1:
 				name = utils.name2;
+				color = utils.colorJ2;
 				break;
 			case 2:
 				name = utils.name3;
+				color = utils.colorJ3;
 				break;
 			case 3:
 				name = utils.name4;
+				color = utils.colorJ4;
 				break;
 			}
-			Player player = new Player(name);
+			Player player = new Player(name, color);
 			this.players.add(player);
 		}
 	}

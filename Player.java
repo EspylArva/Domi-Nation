@@ -14,6 +14,7 @@ public class Player {
 	private ArrayList<Domino> dominoInHands = new ArrayList<Domino>();
 	private Domino lastDomino;			// Utile ?
 	private int points;
+	private String color;
 	
 	private KingdomMap map;
 	
@@ -341,9 +342,10 @@ public class Player {
 	 * @author 			Tchong-Kite HUAM
 	 * @date			Last updated on 10.12.2018
 	 */
-	public Player(String name)
+	public Player(String name, String color)
 	{
 		this.setName(name);
+		this.setColor(color);
 		this.setPoints(0);
 		this.map = new KingdomMap(utils.mapSize);
 	}
@@ -386,6 +388,22 @@ public class Player {
 
 	public void setPoints(int points) {
 		this.points = points;
+	}
+
+	public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
+	}
+
+	public KingdomMap getMap() {
+		return map;
+	}
+
+	public void setMap(KingdomMap map) {
+		this.map = map;
 	}
 
 
