@@ -36,7 +36,10 @@ public class PiocheGraphic extends JPanel{
 	private int height = 200;
 	private int vgap = 5;
 	private boolean tour1 = true;
-	private ArrayList<ImageIcon> oldPiocheImg = new ArrayList<ImageIcon>();
+	ArrayList<ImageIcon> oldPiocheImg = new ArrayList<ImageIcon>();
+	ArrayList<ImageIcon> newPiocheImg = new ArrayList<ImageIcon>();
+	private int index = 0; //juste un compteur
+	private int indexDominoChoisi; //index Domino choisi pour add à l'action listener
 	
 	private ArrayList<Cell> listOfOldCell = new ArrayList<Cell>();
 	
@@ -67,8 +70,14 @@ public class PiocheGraphic extends JPanel{
 	}//fin constructor 1
 	
 	//------------------------------------------------------------------
-	//Method
-	public void updatePioche(ArrayList<Cell> listOfNewCell, ArrayList<Player> turnOrder) {
+	/**
+	 * Mise à jour de la pioche
+	 * @author Batelier
+	 * @param listOfDomino
+	 * @param listOfNewCell
+	 * @param turnOrder
+	 */
+	public void updatePioche(ArrayList<Domino> listOfDomino, ArrayList<Cell> listOfNewCell, ArrayList<Player> turnOrder) {
 		//supprimer ancien affichage
 		this.setVisible(false);
 		this.removeAll();
@@ -76,28 +85,76 @@ public class PiocheGraphic extends JPanel{
 		//Update btn
 		int compteur = 0;
 		int compteurOld = 0;
-		for (int i = 0; i<this.nbPioche; i++) {
-			this.add(new PaintedButton(listOfNewCell.get(compteur), turnOrder.get(i), false)); compteur ++;
-			this.add(new PaintedButton(listOfNewCell.get(compteur), turnOrder.get(i), true)); compteur ++;
+		
+		newPiocheImg.clear();
+		
+		index = 0;
+		for (index = 0; index<this.nbPioche; index++) {
+			
+			//new pioche
+			indexDominoChoisi = listOfDomino.get(index).getIndex();
+			PaintedButton paintedBtn1 = new PaintedButton(listOfNewCell.get(compteur), turnOrder.get(index), true, indexDominoChoisi, index);
+			compteur++;
+			PaintedButton paintedBtn2 = new PaintedButton(listOfNewCell.get(compteur), turnOrder.get(index), true, indexDominoChoisi, index);
+			compteur++;
+			ArrayList<PaintedButton> paintedBtns = new ArrayList<PaintedButton>(Arrays.asList(paintedBtn1, paintedBtn2));
+			
+			////Action Listener //////////////////////////////		
+			for (PaintedButton ptnB : paintedBtns) {
+				ptnB.addActionListener(new ActionListener() {
+					
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						utils.choiceDomino = Game.getInstance().dominoParser(ptnB.getIndexOfChoice());
+						//utils.choiceDomino = new Domino(ptnB.getIndexOfChoice());
+						for (PaintedButton btn : paintedBtns) {
+							if (btn.getIndex() == ptnB.getIndex()) {
+								btn.setEnabled(false);
+							}
+						}
+						utils.choiceDone = true;
+						
+					}
+				});
+			}
+			
+			//ajouter nouvelle pioche
+			this.add(paintedBtn1);
+			this.add(paintedBtn2); 
+			
+			//button invisible du milieu
 			JButton btnVoid = new JButton(); btnVoid.setVisible(false);
 			this.add(btnVoid);
+			//dessiner les rois sur l'ancienne pioche si tour 1 sans reprendre les anciennes images
 			if (tour1) {
 				this.add(new JButton());
 				JButton btnDrawKing = new JButton();
-				btnDrawKing.setIcon(colorKing(turnOrder.get(i)));
+				btnDrawKing.setIcon(colorKing(turnOrder.get(index)));
 				this.add(btnDrawKing);
 			}
 			else {
-				JButton btn = new JButton(); btn.setIcon(oldPiocheImg.get(compteurOld));
+				JButton btn = new JButton(); 
+				btn.setIcon(oldPiocheImg.get(compteurOld));
 				compteurOld ++;
-				JButton btn2 = new JButton(); btn2.setIcon(oldPiocheImg.get(compteurOld));
+				JButton btn2 = new JButton();
+				btn2.setIcon(buildImageIcon(oldPiocheImg.get(compteurOld), colorKing(turnOrder.get(index))));
 				compteurOld++;
 				this.add(btn); 
 				this.add(btn2);
 				//this.add(new JButton("YO"));this.add(new JButton("YO"));
 				
 			}
-		} 
+			//System.out.println(index + " : "+ turnOrder.get(index).getName());
+		}//fin boucle for
+		
+		//update ancienne liste de player
+		if (!tour1) {
+			oldPiocheImg.clear();
+			for (ImageIcon img : newPiocheImg) {
+				oldPiocheImg.add(img);
+			}
+		}
+			
 		//afficher nouvel affichage
 		this.setVisible(true);
 		
@@ -122,8 +179,12 @@ public class PiocheGraphic extends JPanel{
 		private ImageIcon imgfond = new ImageIcon();
 		private ImageIcon imgCrwn = new ImageIcon();
 		private ImageIcon imgFinale = new ImageIcon();
+		private int indexOfChoice;
+		private int index;
 		
-		public PaintedButton(Cell cell, Player player, Boolean drawKing) {
+		public PaintedButton(Cell cell, Player player, Boolean inPioche, int indexOfChoice, int index) {
+			this.indexOfChoice = indexOfChoice;
+			this.index = index;
 			switch (cell.getCrownNb()) {
 			case 0:
 				break;
@@ -160,12 +221,41 @@ public class PiocheGraphic extends JPanel{
 //			if (drawKing && !tour1) {
 //				imgFinale = buildImageIcon(imgFinale, colorKing(player));
 //			}
-			oldPiocheImg.add(imgFinale);
+			if (inPioche) {
+				if (tour1) {
+					oldPiocheImg.add(imgFinale);
+				}
+				else if (!tour1) {
+					newPiocheImg.add(imgFinale);
+				}
+			}
+			
 			this.setIcon(imgFinale);
 			
-		}//fon constructor
-	}//fin classe
+		}//fin constructor
 
+		//---------------------------
+		//GETTERS SETTERS
+		public int getIndexOfChoice() {
+			return indexOfChoice;
+		}
+
+		public void setIndexOfChoice(int indexOfChoice) {
+			this.indexOfChoice = indexOfChoice;
+		}
+
+		public int getIndex() {
+			return index;
+		}
+
+		public void setIndex(int index) {
+			this.index = index;
+		}
+		
+		//---------------------------
+		
+	}//fin classe
+	
 	//------------------------------------------------------------------
 	//Methods
 	/**
@@ -203,25 +293,6 @@ public class PiocheGraphic extends JPanel{
 		return icon;
 	}
 	
-	//------------------------------------------------------------------
-	/**
-	 * Choix Domino graphiquement
-	 * @author Batelier
-	 * @param player
-	 * @return DOmino
-	 */
-	public Domino getPickDomino(Player player) {
-		ArrayList<Integer> listInt = new ArrayList<Integer>(Arrays.asList(0,1,5,6,10,11,15,16));
-		if (nbPioche == 3) {
-			listInt = new ArrayList<Integer>(Arrays.asList(0,1,5,6,10,11));
-		}
-		
-		for (Integer i : listInt) {
-			this.getComponent(i).setEnabled(false);
-		}
-		return null;
-	}
-	//------------------------------------------------------------------
 	//GETTERS
 	public int getNbPioche() {
 		return nbPioche;

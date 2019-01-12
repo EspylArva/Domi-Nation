@@ -15,6 +15,7 @@ public class utils {
 	static public String colorJ2;
 	static public String colorJ3;
 	static public String colorJ4;
+	static public Domino choiceDomino; //domino choisi
 	
 
 	//////////////////////////////////////////////////////////////

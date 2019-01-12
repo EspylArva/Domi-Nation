@@ -5,6 +5,8 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Scanner;
 
 
@@ -20,6 +22,7 @@ public class Game
 	private ArrayList<Player> players = new ArrayList<Player>();
 	private ArrayList<Domino> choice = new ArrayList<Domino>();
 	private ArrayList<Domino> oldChoice = new ArrayList<Domino>();
+	private HashMap<Integer, Player> turnOrder = new HashMap<Integer, Player>();
 	private int numKing;
 
 	//////////////////////////////////////////////////////////////
@@ -179,40 +182,72 @@ public class Game
 	 * @author 			Tchong-Kite HUAM
 	 * @date			Last updated on 10.12.2018
 	 */
-	public ArrayList<Player> getTurnOrder()
-	{
-	    ArrayList<Domino> temp = new ArrayList<Domino>();
-	    for(int i=1 ; i<numKing+1 ; i++)
-	    {
-	    	temp.add(oldChoice.get(oldChoice.size()-i));
-	    }
-	    
-	    Collections.sort(temp, new Comparator<Domino>()
-	    		{
-	    			public int compare(Domino domino1, Domino domino2)
-	    			{
-	    				return domino1.getIndex() - domino2.getIndex();
-	    			}
-	    		});
-	    ArrayList<Player> turnOrder = new ArrayList<Player>();
-	    
-	    for(Domino i : temp)
-	    {
-	    	for(Player player : players)
-	    	{
-	    		ArrayList<Integer> listOfDominoIndex = new ArrayList<Integer>();
-	    		for(Domino hand : player.getDominoInHands())
-	    		{
-	    			listOfDominoIndex.add(hand.getIndex());
-	    		}
-	    		if( listOfDominoIndex.contains(i.getIndex()) )
-		    	{
-		    		turnOrder.add(player);
-		    	}
-	    	}
-	    }
-		return turnOrder;
-	}
+//	public ArrayList<Player> getTurnOrder()
+//	{
+//	    ArrayList<Domino> temp = new ArrayList<Domino>();
+//	    for(int i=1 ; i<numKing+1 ; i++)
+//	    {
+//	    	temp.add(oldChoice.get(oldChoice.size()-i));
+//	    }
+//	    
+//	    Collections.sort(temp, new Comparator<Domino>()
+//	    		{
+//	    			public int compare(Domino domino1, Domino domino2)
+//	    			{
+//	    				return domino1.getIndex() - domino2.getIndex();
+//	    			}
+//	    		});
+//	    ArrayList<Player> turnOrder = new ArrayList<Player>();
+//	    
+//	    for(Domino i : temp)
+//	    {
+//	    	for(Player player : players)
+//	    	{
+//	    		ArrayList<Integer> listOfDominoIndex = new ArrayList<Integer>();
+//	    		for(Domino hand : player.getDominoInHands())
+//	    		{
+//	    			listOfDominoIndex.add(hand.getIndex());
+//	    		}
+//	    		if( listOfDominoIndex.contains(i.getIndex()) )
+//		    	{
+//		    		turnOrder.add(player);
+//		    	}
+//	    	}
+//	    }
+//		return turnOrder;
+//	}
+	
+	public HashMap<Integer,Player> getTurnOrder(){ 
+		return this.turnOrder;
+    }
+	
+    public void setTurnOrder(HashMap<Integer,Player> newOrder)
+    {
+        this.turnOrder = newOrder;
+    }
+
+    public void addRefreshTurnOrder(Domino d, Player p)
+    {
+        this.turnOrder.put(d.getIndex(), p);
+    }
+    
+    public ArrayList<Player> generateOrder(HashMap<Integer,Player> turnOrder)
+    {
+            ArrayList<Integer> ids = new ArrayList<Integer>();
+        ArrayList<Player> sortedOrder = new ArrayList<Player>();
+        for(Entry<Integer,Player> entry : turnOrder.entrySet())
+        {
+                ids.add( entry.getKey());
+        }
+        Collections.sort(ids);
+        
+        for(int i=0 ; i<ids.size() ; i++)
+        {
+                sortedOrder.add(turnOrder.get(ids.get(i)));
+        }
+        return sortedOrder;
+        
+    }
 	
 	/**
 	 * Bien mettre le fichier csv dans le projet (src)

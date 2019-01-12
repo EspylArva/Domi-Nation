@@ -59,6 +59,9 @@ public class GameWindow extends JFrame {
 	private Dimension fullScreen = Toolkit.getDefaultToolkit().getScreenSize();
 	private JPanel game = new BackgroundPanel();
 	
+	//Label
+	private JLabel playerTurnLabel = new JLabel();
+	
 	//constructor
 	public GameWindow() {
 		//Code JFrame base
@@ -98,7 +101,7 @@ public class GameWindow extends JFrame {
 		game.add(ongletTerrains);
 		ongletTerrains.setBounds((int) (fullScreen.getWidth()/2)-250, ((int)fullScreen.getHeight()/2)-250, 500, 500);
 		
-		listOfTerrain.get(1).getComponent(5).setBackground(Color.blue); //methode de la magie
+		//listOfTerrain.get(1).getComponent(5).setBackground(Color.blue); //methode de la magie
 		
 		//pioche -------------------------------------------------------------------------
 		game.add(pioche);
@@ -112,8 +115,10 @@ public class GameWindow extends JFrame {
 		JLabel labelOldPioche = new JLabel("Ancienne pioche");
 		labelNewPioche.setBounds(pioche.getX(), pioche.getY() - 80, 200, 100);
 		labelOldPioche.setBounds(pioche.getX() + 150, pioche.getY() - 80, 200, 100);
+		playerTurnLabel.setBounds(labelNewPioche.getX(), labelNewPioche.getY()-120, 400, 200);
 		game.add(labelNewPioche);
 		game.add(labelOldPioche);
+		game.add(playerTurnLabel);
 		
 		//Onglet consultation des royaumes ===============================================
 		JPanel royaumes = new JPanel();
@@ -181,9 +186,29 @@ public class GameWindow extends JFrame {
 			listOfCell.add(dom.getCell2());
 		}
 		
-		pioche.updatePioche(listOfCell, turnOrder);	
+		pioche.updatePioche(arrayListDomino, listOfCell, turnOrder);	
 	}
 	
+	/**
+	 * Label Tour du joueur en cours
+	 * @param playerTurn1
+	 */
+	public void showWhoseTurn(Player playerTurn1) {
+		String txt = playerTurn1.getName();
+		if (playerTurn1.getColor().equals("Bleu")) {
+			playerTurnLabel.setForeground(Color.blue);
+		} else if (playerTurn1.getColor().equals("Rouge")) {
+			playerTurnLabel.setForeground(Color.red);
+		} else if (playerTurn1.getColor().equals("Orange")) {
+			playerTurnLabel.setForeground(Color.orange);
+		} else if (playerTurn1.getColor().equals("Vert")) {
+			playerTurnLabel.setForeground(Color.green);
+		}
+		playerTurnLabel.setText("Tour " + txt);
+		playerTurnLabel.setFont(new Font("Bold", 1, 40));
+		
+		
+	}
 
 	//=====================================================================
 	//GETTERS SETTERS
