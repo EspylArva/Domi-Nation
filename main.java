@@ -13,6 +13,7 @@ import java.util.Timer;
 import java.util.function.UnaryOperator;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.border.TitledBorder;
@@ -138,37 +139,37 @@ public class main {
 		}
 		menu.dispose(); //ferme le menu
 		
-		GameWindow gameGraphic = new GameWindow();///  gameGraphic  
+		 
 		////////////////////////////////////////////////////////////
 		
 		Game.getInstance().setChoice(Game.getInstance().distribDominos());							// On pioche X dominos et on les affiche : ici 4 rois, donc 4 dominos
 		System.out.println("stop");
 		ArrayList<Player> turnX = Game.getInstance().randomizeKings();       	// On mélange les rois pour distribuer les dominos aléatoirement
 
+		GameWindow gameGraphic = new GameWindow(turnX);///  gameGraphic 
+		
+		for(Player player : turnX){
+			//player.getTerrainGraphic().drawTerrainGraphic();
+		}
+		
 	    disp(Game.getInstance(), gameGraphic, turnX);
-	    /*
-	    //TODO ALERT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	    for(Domino d : Game.getInstance().getAvailableDominos())
-    	{
-    		System.out.println("1: " + d.getCells()[0] +
-    		" | 2: " + d.getCells()[1]);
-    		System.out.println("INDEX: " + d.getIndex());
-    	}
-	    //TODO ALERT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	    */
 	    
+	    //#################################### TOUR 1 ######################################
 	    // Affiche l'ordre du 1er tour
 	    for(Player i : turnX) 	{System.out.print(i.getName() + " ");}  System.out.println();
 // TOUR N°1
 	    for (Player playerTurn1 : turnX) // On peut remplacer turnX par Game.getInstance().randomizeKings() SSI on enlève le display de l'ordre du 1er tour (sinon, deux objets)
 	    {
-	    	////// Choix console dans la pioche
-	    	//Domino pick = playerTurn1.selectDomino(Game.getInstance().getChoice());
 	    	
-	    	//graphique pioche
-	    	////////////////////////////////////////////////////////////////////////
+	    	//Graphic Update and display terrain----------------------------
+	    	playerTurn1.getTerrainGraphic().updateTerrainGraphic(playerTurn1.getKingdomMap(), playerTurn1);
+	    	gameGraphic.drawTerrainGraphic(playerTurn1.getNumTerrainGraphic());
+
+	    	// Choix console dans la pioche
+	    	//Domino pick = playerTurn1.selectDomino(Game.getInstance().getChoice());
+
+	    	//graphique pioche----------------------------------------------
 	    	gameGraphic.showWhoseTurn(playerTurn1);
-	    	//Domino pick = gameGraphic.getPioche().getPickDomino(i);
 	    	System.out.println("Choix domino " + playerTurn1.getName());
 	    	while (!utils.choiceDone) {  //mettre une condition valable
 				try {
@@ -179,57 +180,83 @@ public class main {
 				}
 			} utils.choiceDone = false; //reset le choix
 			Domino pick = utils.choiceDomino;
-	    	////////////////////////////////////////////////////////////////////////
 
+			//code gestion choix domino-------------------------------------
 	    	Game.getInstance().addRefreshTurnOrder(pick, playerTurn1);
 	    	playerTurn1.addToHand(pick);									// Chaque joueur choisit un domino parmi la pioche
 	    	Game.getInstance().getOldChoice().add(pick);								// On passe les dominos choisis dans la pioche des anciens dominos
 	    	Game.getInstance().getChoice().remove(pick);								// On enleve les dominos choisis des options possibles
 	    	
-	    	/////////---------------------------------------------------------------
-	    	System.out.print(playerTurn1.getName() + " | " + playerTurn1.showHand() + " | " +'\n');
-	    	// display de la main du joueur
+	    	// display graphic main du joueur-------------------------------
+	    	gameGraphic.showChosenDomino(playerTurn1.getDominoInHands());
 	    	
-	    	
-	    	//console
+	    	//code créer la liste de move possible--------------------------
 	    	ArrayList<Move> moves = new ArrayList<Move>();
 	    	for(Domino domino : playerTurn1.getDominoInHands())
 	    	{	
 	    		moves.addAll(playerTurn1.getPossibleMove(domino, playerTurn1.getKingdomMap()));	    		
 	    	}
+
+	    	//Choix graphique du move---------------------------------------
+	    	Move move = utils.choiceMove;
+	    	boolean moveAccepted = false;
+	    	while (!moveAccepted) { //tant que le move n'est pas valide, réessayer
+	    		while (!utils.choiceMoveDone) {  //mettre une condition valable
+					try {
+						System.out.println("Choix move...");
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+	    		//Verfification du move
+	    		System.out.println("######## VERIFICATION ########");
+	    		int terrainSize = playerTurn1.getKingdomMap().getTerrain().get(0).size();
+	    		int x1 = utils.posCell1 % terrainSize ;
+	    		int y1 = (int) Math.floorDiv(utils.posCell1 , terrainSize) ;
+	    		int[] pos1 = new int[] {x1, y1};
+	    		
+	    		int x2 = utils.posCell2 % terrainSize ;
+	    		int y2 = (int) Math.floorDiv(utils.posCell2 , terrainSize) ;
+	    		int[] pos2 = new int[] {x2, y2};
+	    		
+	    		move = new Move(utils.choiceDomino, pos1, pos2);
+	    		System.out.println(utils.choiceDomino.getCell1().getTerrainType() + " " + utils.choiceDomino.getCell2().getTerrainType());
+	    		System.out.println("Cell1 : " + move.getPos1()[0] + " " + move.getPos1()[1]
+	    				+" Cell 2 : "+ move.getPos2()[0] + " " + move.getPos2()[1]);
+	    		
+	    		System.out.println("Move possible : " + moves.contains(move));
+
+	    		for (Move mv : moves) {
+	    			if (mv.getPos1()[0] == move.getPos1()[0] && mv.getPos1()[1] == move.getPos1()[1]
+	    					&& mv.getPos2()[0] == move.getPos2()[0] && mv.getPos2()[1] == move.getPos2()[1]) {
+	    				System.out.println("MOVE ACCEPTED");
+	    				moveAccepted = true;
+	    			}
+	    			
+	    		}
+		    	utils.choiceMoveDone = false; //reset le choix
+		    	utils.posCell1 = -1; utils.posCell2 = -1;
+	    	} moveAccepted = false;
+
+	    	//Graphic cacher affichage du domino choisi une fois posé-------------
+	    	gameGraphic.hideChosenDomino();
 	    	
-	    	//console
-	    	for(Move move : moves){System.out.println("Cell1 : " + move.getPos1()[0] + ";" + move.getPos1()[1] + " | Cell2 : " + + move.getPos2()[0] + ";" + move.getPos2()[1]);}
-	    	// display du movepool
-	    	
-	    	//console
-	    	System.out.println(playerTurn1.getName() + ", choisissez un movement :");
-	    	Scanner scan = new Scanner(System.in);
-	    	int i = scan.nextInt();
-	    	Move move = moves.get(i);														// choix du move
-	    	
-	    	//console
+	    	//console ajouter domino à la map-------------------------------------
 	    	playerTurn1.setKingdomMap(playerTurn1.returnFutureMap(move, playerTurn1.getKingdomMap()));		// joue le domino/move sur le terrain
 	    	playerTurn1.getDominoInHands().remove(move.getDomino());				// Enlève le domino de la main après l'avoir joué
-	    	/////////---------------------------------------------------------------
 	    	
 	    }														
 	    	    
 	    
 // TOUR N°X
+	  //#################################### TOUR X ######################################
 	    while(!Game.getInstance().getAvailableDominos().isEmpty())
 	    {
+
 	    	//System.out.println(Game.getInstance().getTurnOrder());
 	    	Game.getInstance().setChoice(Game.getInstance().distribDominos());							// On repioche 3-4 dominos pour constituer une nouvelle pioche
 		    
-	    	/**
-	    	 * ArrayList de Player à mettre en paramètre
-	    	 */
-	    	ArrayList<Player> playerOrder = new ArrayList<Player>();
-	    	for(Entry<Integer,Player> entry : Game.getInstance().getTurnOrder().entrySet())
-	        {
-	                playerOrder.add( entry.getValue());
-	        }
 	    	disp(Game.getInstance(), gameGraphic, Game.getInstance().generateOrder(Game.getInstance().getTurnOrder()));
 	    	
 		    //HashMap Temporaire
@@ -242,61 +269,87 @@ public class main {
 		    
 		    for(Player player : Game.getInstance().generateOrder(Game.getInstance().getTurnOrder()))
 		    {
-		    	////Pioche
-		    	System.out.println("#############NOUVEAU TOUR##############");
+		    	//Graphic Update and display terrain----------------------------
+		    	player.getTerrainGraphic().updateTerrainGraphic(player.getKingdomMap(), player);
+		    	gameGraphic.drawTerrainGraphic(player.getNumTerrainGraphic());
 
-		    	//////////////////////////////////////////////////////////////////
-		    	//Pioche en Console
-		    	//Domino pick = player.selectDomino(Game.getInstance().getChoice());
-		    	//////////////////////////////////////////////////////////////////
-		    	//Pioche en graphique
+		    	// Choix console dans la pioche
+		    	//Domino pick = playerTurn1.selectDomino(Game.getInstance().getChoice());
 
-		    	gameGraphic.showWhoseTurn(player); //affichage tour joueur en cours
-		    	
+		    	//graphique pioche----------------------------------------------
+		    	gameGraphic.showWhoseTurn(player);
 		    	System.out.println("Choix domino " + player.getName());
 		    	while (!utils.choiceDone) {  //mettre une condition valable
-		    		try {
-		    			System.out.println("En attente");
-		    			Thread.sleep(500);
-		    		} catch (InterruptedException e) {
-		    			e.printStackTrace();
-		    		}
-		    	} utils.choiceDone = false; //reset le choix
-		    	Domino pick = utils.choiceDomino;
-		    	///////////////////////////////////////////////////////////////////
+					try {
+						System.out.println("En attente...");
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				} utils.choiceDone = false; //reset le choix
+				Domino pick = utils.choiceDomino;
 
-		    	hashTemporaire.put(pick.getIndex(), player);
-		    	player.addToHand(pick);
-		    	Game.getInstance().getOldChoice().add(pick);
-		    	Game.getInstance().getChoice().remove(pick);
-		    	System.out.println();
-		    	//Fin Pioche
+				//code gestion choix domino-------------------------------------
+				hashTemporaire.put(pick.getIndex(), player);
+		    	Game.getInstance().addRefreshTurnOrder(pick, player);
+		    	player.addToHand(pick);									// Chaque joueur choisit un domino parmi la pioche
+		    	Game.getInstance().getOldChoice().add(pick);								// On passe les dominos choisis dans la pioche des anciens dominos
+		    	Game.getInstance().getChoice().remove(pick);								// On enleve les dominos choisis des options possibles
 		    	
+		    	// display graphic main du joueur-------------------------------
+		    	gameGraphic.showChosenDomino(player.getDominoInHands());
 		    	
-		    	/*for(Domino d : player.getDominoInHands())
-		    	{
-		    		System.out.println("0: " + d.getCells()[0] +
-		    		" | 1: " + d.getCells()[1]);
-		    		System.out.println("0: " + d.getIndex());
-		    	}*/
-	
-		    	System.out.print(player.getName() + " | " + player.showHand() + " | " +'\n');
-		    	// display de la main du joueur
-		    	
+		    	//code créer la liste de move possible--------------------------
 		    	ArrayList<Move> moves = new ArrayList<Move>();
 		    	for(Domino domino : player.getDominoInHands())
 		    	{	
 		    		moves.addAll(player.getPossibleMove(domino, player.getKingdomMap()));	    		
 		    	}
+
+		    	//Choix graphique du move---------------------------------------
+		    	Move move = utils.choiceMove;
+		    	boolean moveAccepted = false;
+		    	while (!moveAccepted) { //tant que le move n'est pas valide, réessayer
+		    		while (!utils.choiceMoveDone) {  //mettre une condition valable
+						try {
+							System.out.println("Choix move...");
+							Thread.sleep(500);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+		    		//Verfification du move
+		    		System.out.println("######## VERIFICATION ########");
+		    		int terrainSize = player.getKingdomMap().getTerrain().get(0).size();
+		    		int x1 = utils.posCell1 % terrainSize ;
+		    		int y1 = (int) Math.floorDiv(utils.posCell1 , terrainSize) ;
+		    		int[] pos1 = new int[] {x1, y1};
+		    		
+		    		int x2 = utils.posCell2 % terrainSize ;
+		    		int y2 = (int) Math.floorDiv(utils.posCell2 , terrainSize) ;
+		    		int[] pos2 = new int[] {x2, y2};
+		    		
+		    		move = new Move(utils.choiceDomino, pos1, pos2);
+		    		System.out.println(utils.choiceDomino.getCell1().getTerrainType() + " " + utils.choiceDomino.getCell2().getTerrainType());
+		    		System.out.println("Cell1 : " + move.getPos1()[0] + " " + move.getPos1()[1]
+		    				+" Cell 2 : "+ move.getPos2()[0] + " " + move.getPos2()[1]);
+
+		    		for (Move mv : moves) {
+		    			if (mv.getPos1()[0] == move.getPos1()[0] && mv.getPos1()[1] == move.getPos1()[1]
+		    					&& mv.getPos2()[0] == move.getPos2()[0] && mv.getPos2()[1] == move.getPos2()[1]) {
+		    				System.out.println("MOVE ACCEPTED");
+		    				moveAccepted = true;
+		    			}
+		    			
+		    		}
+			    	utils.choiceMoveDone = false; //reset le choix
+			    	utils.posCell1 = -1; utils.posCell2 = -1;
+		    	} moveAccepted = false;
+
+		    	//Graphic cacher affichage du domino choisi une fois posé-------------
+		    	gameGraphic.hideChosenDomino();
 		    	
-		    	for(Move move : moves){System.out.println("Cell1 : " + move.getPos1()[0] + ";" + move.getPos1()[1] + " | Cell2 : " + + move.getPos2()[0] + ";" + move.getPos2()[1]);}
-		    	// display du movepool
-		    	
-		    	System.out.println(player.getName() + ", choisissez un movement :");
-		    	Scanner scan = new Scanner(System.in);
-		    	int i = scan.nextInt();
-		    	Move move = moves.get(i);														// choix du move
-		    	
+		    	//console ajouter domino à la map-------------------------------------
 		    	player.setKingdomMap(player.returnFutureMap(move, player.getKingdomMap()));		// joue le domino/move sur le terrain
 		    	player.getDominoInHands().remove(move.getDomino());				// Enlève le domino de la main après l'avoir joué
 		    	

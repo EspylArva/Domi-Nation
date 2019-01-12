@@ -17,6 +17,8 @@ public class Player {
 	private String color;
 	
 	private KingdomMap map;
+	private TerrainGraphic terrainGraphic; //le terrain graphique
+	private int numTerrainGraphic; //le numero attribué du terrain Graphique correspondant
 	
 	
 
@@ -406,5 +408,20 @@ public class Player {
 		this.map = map;
 	}
 
+	public int getNumTerrainGraphic() {
+		return numTerrainGraphic;
+	}
 
+	public void setNumTerrainGraphic(int numTerrainGraphic) {
+		this.numTerrainGraphic = numTerrainGraphic;
+	}
+
+	public TerrainGraphic getTerrainGraphic() {
+		return terrainGraphic;
+	}
+
+	public void setTerrainGraphic(TerrainGraphic terrainGraphic) {
+		this.terrainGraphic = terrainGraphic;
+	}
+	
 }

@@ -28,7 +28,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.RootPaneContainer;
 
-
 /**
  * Fenetre ingame
  * CardLayout contient jeu et consultation de royaumes
@@ -62,8 +61,12 @@ public class GameWindow extends JFrame {
 	//Label
 	private JLabel playerTurnLabel = new JLabel();
 	
+	//InGame
+	private JPanel panelDominoToPLay = new JPanel(); 
+	private JLabel labelDominoToPlay = new JLabel("Domino à jouer :");
+	
 	//constructor
-	public GameWindow() {
+	public GameWindow(ArrayList<Player> listOfPLayer) {
 		//Code JFrame base
 		this.setTitle("DomiNations"); //titre
 		
@@ -89,10 +92,12 @@ public class GameWindow extends JFrame {
 		//Terrains -----------------------------------------------------------------------
 		ongletTerrains.setLayout(ongletLayoutTerrains);
 		
-		ArrayList<String> listName = new ArrayList<String>(Arrays.asList(utils.name1,utils.name2,utils.name3,utils.name4));
+		//ArrayList<String> listName = new ArrayList<String>(Arrays.asList(utils.name1,utils.name2,utils.name3,utils.name4));
 		ArrayList<TerrainGraphic> listOfTerrain = new ArrayList<TerrainGraphic>();
 		for (int i = 0; i < utils.numbPlayers; i++) {
-			TerrainGraphic terrain = new TerrainGraphic(listName.get(i));
+			TerrainGraphic terrain = new TerrainGraphic(listOfPLayer.get(i).getColor());
+			listOfPLayer.get(i).setNumTerrainGraphic(i);
+			listOfPLayer.get(i).setTerrainGraphic(terrain);
 			listOfTerrain.add(terrain);
 			ongletTerrains.add(terrain, listOngletTerrains[i]);
 //			game.add(terrain);
@@ -109,13 +114,22 @@ public class GameWindow extends JFrame {
 		
 		//Affichage des points -----------------------------------------------------------
 		
+		//InGame Affichage ---------------------------------------------------------------
+		panelDominoToPLay.setLayout(new GridLayout(1, 2));
+		panelDominoToPLay.setBounds(pioche.getX() + 50, pioche.getY() + 300, 100, 50);
+		panelDominoToPLay.setVisible(false);
+		game.add(panelDominoToPLay);
+		
 		//Labels -------------------------------------------------------------------------
 		     //police à augmenter
-		JLabel labelNewPioche = new JLabel("Nouvelle pioche");
-		JLabel labelOldPioche = new JLabel("Ancienne pioche");
+		JLabel labelNewPioche = new JLabel("Nouvelle pioche"); labelNewPioche.setFont(new Font("Bold", 1, 15));
+		JLabel labelOldPioche = new JLabel("Ancienne pioche"); labelOldPioche.setFont(new Font("Bold", 1, 15));
 		labelNewPioche.setBounds(pioche.getX(), pioche.getY() - 80, 200, 100);
 		labelOldPioche.setBounds(pioche.getX() + 150, pioche.getY() - 80, 200, 100);
 		playerTurnLabel.setBounds(labelNewPioche.getX(), labelNewPioche.getY()-120, 400, 200);
+		labelDominoToPlay.setFont(new Font("Bold", 1, 15));
+		labelDominoToPlay.setBounds(pioche.getX() + 50, pioche.getY() + 250, 250, 50);
+		game.add(labelDominoToPlay);
 		game.add(labelNewPioche);
 		game.add(labelOldPioche);
 		game.add(playerTurnLabel);
@@ -205,11 +219,42 @@ public class GameWindow extends JFrame {
 			playerTurnLabel.setForeground(Color.green);
 		}
 		playerTurnLabel.setText("Tour " + txt);
-		playerTurnLabel.setFont(new Font("Bold", 1, 40));
-		
-		
+		playerTurnLabel.setFont(new Font("Bold", 1, 40));		
 	}
 
+	//======================================================================= Game Graphic Method
+	
+	/**
+	 * Afficher le domino qui doit être posé ou skip
+	 * @author Batelier
+	 * @param listOfDomino
+	 */
+	public void showChosenDomino(ArrayList<Domino> listOfDomino) {
+		panelDominoToPLay.removeAll();
+		Domino domino = listOfDomino.get(0);
+		PaintedGameButton btn1 = new PaintedGameButton(domino.getCell1(),0);
+		PaintedGameButton btn2 = new PaintedGameButton(domino.getCell2(),0);
+		panelDominoToPLay.add(btn1);
+		panelDominoToPLay.add(btn2);
+		panelDominoToPLay.setVisible(true);
+		pioche.setVisible(false);
+	}
+	public void hideChosenDomino() {
+		panelDominoToPLay.setVisible(false);
+		pioche.setVisible(true);
+	}
+	
+	
+	
+	/**
+	 * Affiche l'onglet de cardlayout contenant le terrain du joueur en cours
+	 * @author Batelier
+	 * @param indexOfTerrain
+	 */
+	public void drawTerrainGraphic(int indexOfTerrain) {
+		ongletLayoutTerrains.show(ongletTerrains, listOngletTerrains[indexOfTerrain]);
+	}
+	
 	//=====================================================================
 	//GETTERS SETTERS
 	public PiocheGraphic getPioche() {
