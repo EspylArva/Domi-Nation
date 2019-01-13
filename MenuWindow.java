@@ -1,6 +1,7 @@
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.List;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -17,6 +18,7 @@ import javax.sound.sampled.LineListener;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
@@ -28,6 +30,10 @@ import javax.swing.JTextField;
  */
 public class MenuWindow extends JFrame{
 	private BackgroundMenuPanel menu = new BackgroundMenuPanel();
+    private JLabel labelNbJoueur = new JLabel();
+    private JLabel labelNomsJoueur = new JLabel();
+    private JLabel labelModeJeu = new JLabel();
+    //private JLabel labelNbJoueur = new JLabel();
 	private JButton btn1j = new JButton("1 joueur");
 	private JButton btn2j = new JButton("2 joueurs");
 	private JButton btn3j = new JButton("3 joueurs");
@@ -43,11 +49,14 @@ public class MenuWindow extends JFrame{
 	private JComboBox<String> colorBox4 = new JComboBox<String>();
 	ArrayList<JComboBox> comboList = new ArrayList<JComboBox>(Arrays.asList(colorBox1, colorBox2, colorBox3, colorBox4));
 	private int nbJoueurs = 0;
+	//mode de jeu : 
+	JComboBox<String> gameModeBox = new JComboBox<String>();
 
 	public MenuWindow() {
 		//Code JFrame base
 		this.setTitle("Menu DomiNations"); //titre
 		Dimension fullScreen = Toolkit.getDefaultToolkit().getScreenSize();
+		//Dimension sizeMenu = new Dimension(); sizeMenu.setSize(fullScreen.getWidth(), fullScreen.getHeight()/2);
 		this.setSize(fullScreen); //taille de la fenetre
 		//this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //quitter le programme quand croix
 		this.setLocationRelativeTo(null); //centrer
@@ -56,15 +65,72 @@ public class MenuWindow extends JFrame{
 		//layout null pour placement libre des boutons
 		menu.setLayout(null);
 		
+		//Labels
+		Font font = new Font("Bold", 1, 30);
+		labelNbJoueur.setFont(font); labelNbJoueur.setText("Nombre de joueur(s) : ");
+		labelNomsJoueur.setFont(font); labelNomsJoueur.setText("Nom(s) et couleur(s) : ");
+		labelModeJeu.setFont(font); labelModeJeu.setText("Mode de jeu : ");
+		labelNbJoueur.setBounds(100, 100, 400, 40);
+		labelNomsJoueur.setBounds(labelNbJoueur.getX(), labelNbJoueur.getY()+150, 400, 40);
+		labelModeJeu.setBounds(labelNbJoueur.getX() + 420, labelNbJoueur.getY(),400,40);
+		menu.add(labelNbJoueur);
+		menu.add(labelNomsJoueur);
+		menu.add(labelModeJeu);
+		gameModeBox.setBounds(labelModeJeu.getX(), labelModeJeu.getY()+50, 100, 25);
+		menu.add(gameModeBox);
+		gameModeBox.addItem("Default");
+	    gameModeBox.addItem("Dynastie");
+	    gameModeBox.addItem("Harmonie");
+	    gameModeBox.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				utils.gameMod = (String)gameModeBox.getSelectedItem();		
+			}
+		});
+		
 		//liste de boutons pour implementer les Action Listener
-		ArrayList<JButton> btnJoueurList = new ArrayList<JButton>(Arrays.asList(btn1j,btn2j,btn3j,btn4j));
+		ArrayList<JButton> btnJoueurList = new ArrayList<JButton>(Arrays.asList(btn2j,btn3j,btn4j));
+		int compteurPlacement = 0;
 		for (JButton btns : btnJoueurList) {
 			btns.addActionListener(new btnNbJoueurs(Integer.parseInt(btns.getText().substring(0, 1))));
+			btns.setBounds(labelNbJoueur.getX()+compteurPlacement, labelNbJoueur.getY()+50, 100, 25);
+			compteurPlacement+=110;
 			menu.add(btns);
 		}
-
+		btn1j.setText("1 vs IA");
+		btn1j.setBounds(btn3j.getX(), btn3j.getY()+35, 100, 25);
+		btn1j.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				utils.numbPlayers = 2;
+				ArrayList<JButton> btnJoueurList = new ArrayList<JButton>(Arrays.asList(btn1j,btn2j,btn3j,btn4j));
+				for (JButton btns : btnJoueurList) {
+					btns.setBackground(null); //reset color
+				}
+				btn1j.setBackground(Color.lightGray);
+				ArrayList<JTextField> textFieldlist = new ArrayList<JTextField>(Arrays.asList(nom1, nom2, nom3, nom4));
+				for (JTextField noms : textFieldlist) {
+					noms.setVisible(false);
+				}
+				for (JComboBox comboBox : comboList) {
+					comboBox.setVisible(false);
+				}
+				for (int i = 0; i<2; i++ ) {
+					textFieldlist.get(i).setVisible(true);
+					if ( i == 1) {
+						textFieldlist.get(i).setText("IA");
+					}
+					comboList.get(i).setVisible(true);
+				}
+				
+				
+			}
+		});
+		menu.add(btn1j);
+				
 		//Rendre invisible et disable les entrees noms et couleurs
 		ArrayList<JTextField> textFieldlist = new ArrayList<JTextField>(Arrays.asList(nom1, nom2, nom3, nom4));
+		
 		for (JTextField noms : textFieldlist) {
 			noms.setVisible(false);
 			menu.add(noms);
@@ -118,21 +184,17 @@ public class MenuWindow extends JFrame{
 			menu.add(comboBox);
 		}
 		//Set Position des buttons / label / texte
-		btn1j.setBounds(100, fullScreen.height/3, 100, 40);
-		btn2j.setBounds(200, fullScreen.height/3, 100, 40);
-		btn3j.setBounds(300, fullScreen.height/3, 100, 40);
-		btn4j.setBounds(400, fullScreen.height/3, 100, 40);
-		nom1.setBounds(150, 420, 100, 20);
-		nom2.setBounds(150, 450, 100, 20);
-		nom3.setBounds(150, 480, 100, 20);
-		nom4.setBounds(150, 510, 100, 20);
+		nom1.setBounds(labelNomsJoueur.getX(), labelNomsJoueur.getY()+50, 100, 20);
+		nom2.setBounds(labelNomsJoueur.getX(), nom1.getY()+30, 100, 20);
+		nom3.setBounds(labelNomsJoueur.getX(), nom2.getY()+30, 100, 20);
+		nom4.setBounds(labelNomsJoueur.getX(), nom3.getY()+30, 100, 20);
 		colorBox1.setBounds(nom1.getX() + 110, nom1.getY(), 100, 20);
 		colorBox2.setBounds(nom2.getX() + 110, nom2.getY(), 100, 20);
 		colorBox3.setBounds(nom3.getX() + 110, nom3.getY(), 100, 20);
 		colorBox4.setBounds(nom4.getX() + 110, nom4.getY(), 100, 20);
 		
 		//set le bouton Play
-		btnplay.setBounds(900, 450, 300, 200);
+		btnplay.setBounds(labelModeJeu.getX(), labelModeJeu.getY()+ 150, 100, 50);
 		btnplay.addActionListener(new btnPlayAction());
 		menu.add(btnplay);
 		
@@ -158,7 +220,7 @@ public class MenuWindow extends JFrame{
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			//liste bouton (code à opti)
-			ArrayList<JButton> btnJoueurList = new ArrayList<JButton>(Arrays.asList(btn1j,btn2j,btn3j,btn4j));
+			ArrayList<JButton> btnJoueurList = new ArrayList<JButton>(Arrays.asList(btn1j, btn2j,btn3j,btn4j));
 			for (JButton btns : btnJoueurList) {
 				btns.setBackground(null); //reset color
 			}
@@ -166,6 +228,7 @@ public class MenuWindow extends JFrame{
 			ArrayList<JTextField> textFieldlist = new ArrayList<JTextField>(Arrays.asList(nom1, nom2, nom3, nom4));
 			for (JTextField noms : textFieldlist) {
 				noms.setVisible(false);
+				nom2.setText("Joueur 2");
 			}
 			for (JComboBox comboBox : comboList) {
 				comboBox.setVisible(false);
@@ -194,6 +257,7 @@ public class MenuWindow extends JFrame{
 			setNbJoueurs(nbj);
 			utils.numbPlayers = nbj;
 			System.out.println(nbJoueurs + " joueur(s)");
+			
 			
 		}//Action Performed
 		
@@ -244,7 +308,7 @@ public class MenuWindow extends JFrame{
 			utils.colorJ2 = (String) colorBox2.getSelectedItem();
 			utils.colorJ3 = (String) colorBox3.getSelectedItem();
 			utils.colorJ4 = (String) colorBox4.getSelectedItem();
-			if (nbJoueurs != 0) {
+			if (utils.numbPlayers != 0) {
 				//utils.playOn = true;
 				utils.play = true;
 			}//si nbJoueurs choisis correct

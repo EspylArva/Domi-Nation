@@ -21,11 +21,11 @@ public class BackgroundMenuPanel extends JPanel{
 			Image fond = ImageIO.read(new File("src/image/fond_menu_transp.png"));
 			g.drawImage(fond, 0, 0, this.getWidth(), this.getHeight(), this);
 			g.drawImage(title, 100, 20, this);
-			Font font = new Font("Arial", Font.CENTER_BASELINE, 30);
-			g.setFont(font);
-			g.drawString("Choisir un nombre de joueur(s).", 100, 200);
-			g.drawString("Saisir le(s) nom(s).", 100, 400);
-			g.drawString("Choisir un mode de jeu.", 900, 200);
+//			Font font = new Font("Arial", Font.CENTER_BASELINE, 30);
+//			g.setFont(font);
+//			g.drawString("Choisir un nombre de joueur(s).", 100, 200);
+//			g.drawString("Saisir le(s) nom(s).", 100, 400);
+//			g.drawString("Choisir un mode de jeu.", 900, 200);
 		}
 		catch(IOException e) {
 			e.printStackTrace();

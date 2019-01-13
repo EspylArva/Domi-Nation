@@ -18,7 +18,7 @@ public class Player {
 	
 	private KingdomMap map;
 	private TerrainGraphic terrainGraphic; //le terrain graphique
-	private int numTerrainGraphic; //le numero attribué du terrain Graphique correspondant
+	private int numTerrainGraphic; //le numero attribué du terrain Graphique correspondant (utilisé aussi pour affichage des points)
 	
 	
 
@@ -310,10 +310,15 @@ public class Player {
 	 * @author 						Tchong-Kite HUAM
 	 * @date						Last updated on 14.12.2018
 	 */
-	private void updateScore()
+	public void updateScore()
 	{
 		this.points = this.map.returnScore();
 	}
+	
+//	public void getScoreUpdated() {
+//		
+//	}
+
 	
 	/**
 	 * Calculates the player's number of crowns on his kingdom.

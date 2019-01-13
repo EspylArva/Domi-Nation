@@ -55,7 +55,7 @@ public class TerrainGraphic extends JPanel {
 	 * @param player
 	 * @author Batelier
 	 */
-	public void updateTerrainGraphic(KingdomMap kingdomMapWrong, Player player) {
+	public void updateTerrainGraphic(KingdomMap kingdomMapWrong, Player player, boolean withButton) {
 		this.removeAll();
 		
 		ArrayList<Cell> listOfCell = triKingdomMap(kingdomMapWrong);
@@ -73,26 +73,27 @@ public class TerrainGraphic extends JPanel {
 				//				btn.Action
 			}
 			cellPos++;
-			btn.addActionListener(new ActionListener() {
+			if(withButton) {
+				btn.addActionListener(new ActionListener() {
 
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					if (utils.posCell1 == -1) {
-						System.out.println("##### POS 1 #####");
-						utils.posCell1 = btn.getCellPos();
-						btn.setIcon(imgFromCell(utils.choiceDomino.getCell1(), btn));
-					} else {
-						System.out.println("##### POS 2 #####");
-						System.out.println(btn.getCellPos());
-						utils.posCell2 = btn.getCellPos();
-						utils.choiceMoveDone = true;
-						btn.setIcon(imgFromCell(utils.choiceDomino.getCell2(), btn));
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						if (utils.posCell1 == -1) {
+							System.out.println("##### POS 1 #####");
+							utils.posCell1 = btn.getCellPos();
+							btn.setIcon(imgFromCell(utils.choiceDomino.getCell1(), btn));
+						} else {
+							System.out.println("##### POS 2 #####");
+							System.out.println(btn.getCellPos());
+							utils.posCell2 = btn.getCellPos();
+							utils.choiceMoveDone = true;
+							btn.setIcon(imgFromCell(utils.choiceDomino.getCell2(), btn));
+						}
+						//btn.setIcon(imageIcon(btn));
+
 					}
-					//btn.setIcon(imageIcon(btn));
-
-				}
-			});
-			
+				});
+			}
 			this.add(btn);
 		}
 
@@ -104,8 +105,8 @@ public class TerrainGraphic extends JPanel {
 	/**
 	 * Return Image Icon of castle
 	 * @author Batelier
-	 * @param color
-	 * @return
+	 * @param String color
+	 * @return ImageIcon
 	 */
 	public ImageIcon chateauImg(String color) {
 		ImageIcon img = new ImageIcon();
@@ -123,6 +124,12 @@ public class TerrainGraphic extends JPanel {
 
 	//-----------------------------------------------------------------------
 	
+	/**
+	 * Réarrange la kingdom map en une arrayList de cell pour affichage
+	 * @param kgMap
+	 * @return arrayList<Cell>
+	 * @author Batelier
+	 */
 	public ArrayList<Cell> triKingdomMap(KingdomMap kgMap) {
 		ArrayList<Cell> listCell = new ArrayList<Cell>();
 		
@@ -137,6 +144,13 @@ public class TerrainGraphic extends JPanel {
 	
 	//-----------------------------------------------------------------------
 	
+	/**
+	 * Return l'ImageIcon de la Cell en paramètre
+	 * @param cell
+	 * @param btn
+	 * @return ImageIcon
+	 * @author Batelier
+	 */
 	public ImageIcon imgFromCell(Cell cell, PaintedGameButton btn) {
 
 		ImageIcon imgfond = new ImageIcon();

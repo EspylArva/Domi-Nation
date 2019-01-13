@@ -24,6 +24,7 @@ public class utils {
 	static public int posCell2 = -1;
 	static public Move choiceMove;
 	static public int compteur;   //deux choix doivent être fait
+	static public boolean skipTurn = false;
 	
 
 	//////////////////////////////////////////////////////////////
